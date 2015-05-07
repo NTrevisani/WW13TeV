@@ -1,0 +1,117 @@
+#include "TROOT.h"
+#include "TCanvas.h"
+#include "THStack.h"
+#include "TH1F.h"
+#include "TLatex.h"
+#include "TSystem.h"
+#include "TTree.h"
+#include "TFile.h"
+#include "TGraph.h"
+#include "TList.h"
+#include "TKey.h"
+#include "TObject.h"
+#include "TStyle.h"
+#include "latinoTree.h"
+#include <vector>
+
+TStyle *tdrStyle = new TStyle("tdrStyle","Style for P-TDR");
+
+int nlep(std::vector<float> *lepPtvec){
+  int cont = 0;
+  for(int q = 0; q < lepPtvec -> size(); ++q)
+    if(lepPtvec -> at(q) > 20)
+      ++cont;
+  return cont;
+}
+
+int macroSSOS(TString plotName = "hWnJetsBvetoAfterHt"){
+
+  TFile *f = new TFile("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_stepB_TTJets.root"); /*latino_stepB_QCD_Pt-20toInf.root");*/ 
+  TTree *t = (TTree*) f -> Get("latino"); 
+
+  std::vector<float> *lepton_pt  = 0;      t -> SetBranchAddress("std_vector_lepton_pt",&lepton_pt);
+  std::vector<float> *lepton_eta = 0;      t -> SetBranchAddress("std_vector_lepton_eta",&lepton_eta);
+  std::vector<float> *lepton_phi = 0;      t -> SetBranchAddress("std_vector_lepton_phi",&lepton_phi);
+
+  std::vector<float> *leptonGen_pt  = 0;   t -> SetBranchAddress("std_vector_leptonGen_pt",&leptonGen_pt);
+  std::vector<float> *leptonGen_eta = 0;   t -> SetBranchAddress("std_vector_leptonGen_eta",&leptonGen_eta);
+  std::vector<float> *leptonGen_phi = 0;   t -> SetBranchAddress("std_vector_leptonGen_phi",&leptonGen_phi);
+
+  std::vector<float> *jet_pt     = 0;      t -> SetBranchAddress("std_vector_jet_pt",&jet_pt);
+  std::vector<float> *jet_eta    = 0;      t -> SetBranchAddress("std_vector_jet_eta",&jet_eta);
+  std::vector<float> *jet_phi    = 0;      t -> SetBranchAddress("std_vector_jet_phi",&jet_phi);
+
+  std::vector<float> *jetGen_pt  = 0;      t -> SetBranchAddress("std_vector_jetGen_pt",&jetGen_pt);
+  std::vector<float> *jetGen_eta = 0;      t -> SetBranchAddress("std_vector_jetGen_eta",&jetGen_eta);
+  std::vector<float> *jetGen_phi = 0;      t -> SetBranchAddress("std_vector_jetGen_phi",&jetGen_phi);
+
+  std::vector<int>   *leptonId   = 0;      t -> SetBranchAddress("std_vector_lepton_id",&leptonId);
+  std::vector<int>   *hadronFl   = 0;      t -> SetBranchAddress("std_vector_jet_HadronFlavour",&hadronFl);
+  std::vector<int>   *partonFl   = 0;      t -> SetBranchAddress("std_vector_jet_PartonFlavour",&partonFl);
+
+  TFile* out = new TFile("fakeNtu.root","recreate");
+  out->cd();
+  TTree* nt = new TTree("nt","nt");
+  nt->SetDirectory(0);
+
+  Float_t jetPt;        nt->Branch("jetPt",&jetPt,"jetPt");
+  Float_t jetEta;       nt->Branch("jetEta",&jetEta,"jetEta");
+  Float_t jetPhi;       nt->Branch("jetPhi",&jetPhi,"jetPhi");
+  Float_t leptonPt;     nt->Branch("leptonPt",&leptonPt,"leptonPt");
+  Float_t leptonPhi;    nt->Branch("leptonPhi",&leptonPhi,"leptonPhi");
+  Float_t leptonEta;    nt->Branch("leptonEta",&leptonEta,"leptonEta");
+  Float_t distance;     nt->Branch("distance",&distance,"distance");
+  Int_t   ID;           nt->Branch("ID",&ID,"ID");
+  Bool_t  sameSign;     nt->Branch("sameSign",&sameSign,"sameSign");
+  Float_t jetGenPt;     nt->Branch("jetGenPt",&jetGenPt,"jetGenPt");
+  Float_t jetGenEta;    nt->Branch("jetGenEta",&jetGenEta,"jetGenEta");
+  Float_t jetGenPhi;    nt->Branch("jetGenPhi",&jetGenPhi,"jetGenPhi");
+  Float_t leptonGenPt;  nt->Branch("leptonGenPt",&leptonGenPt,"leptonGenPt");
+  Float_t leptonGenPhi; nt->Branch("leptonGenPhi",&leptonGenPhi,"leptonGenPhi");
+  Float_t leptonGenEta; nt->Branch("leptonGenEta",&leptonGenEta,"leptonGenEta");
+  Int_t   jetPoint;     nt->Branch("jetPoint",&jetPoint,"jetPoint");
+
+  std::vector<int> point;
+  std::vector<float> dist;
+  std::vector<int> particleId;
+  
+  for(int iEntry = 0; iEntry < /*1000*/t -> GetEntries(); ++iEntry){
+    t->GetEntry(iEntry);
+    if(iEntry == 0) cout<<"Total events: "<<t->GetEntries()<<endl;
+    if(iEntry % 100000 == 0) cout<<"Reading Entry "<<iEntry<<endl;
+    int numberLep = nlep(lepton_pt);
+    if(numberLep > 1) 
+      for(int i = 0; i < numberLep; ++i){
+	dist.push_back(1000.);
+	point.push_back(10);
+	particleId.push_back(leptonId -> at(i));
+	for(int j = 0; j < jetGen_pt -> size(); ++j){
+	  float dumpDist = (jetGen_eta->at(j) - lepton_eta->at(i))**2 + (jetGen_phi->at(j) - lepton_phi->at(i))**2;
+	  if(dumpDist < dist.at(i)){
+	    dist.at(i) = dumpDist;
+	    point.at(i) = j;
+	  }
+	}
+	jetPoint =  point.at(i);
+	leptonGenPt = leptonGen_pt->at(point.at(i));
+	leptonGenEta = leptonGen_eta->at(point.at(i));
+	leptonGenPhi = leptonGen_phi->at(point.at(i));
+	jetGenPt = jetGen_pt->at(point.at(i));
+	jetGenEta = jetGen_eta->at(point.at(i));
+	jetGenPhi = jetGen_phi->at(point.at(i));
+	leptonPt = lepton_pt->at(i);
+	leptonEta = lepton_eta->at(point.at(i));
+	leptonPhi = lepton_phi->at(point.at(i));
+	jetPt = jet_pt->at(point.at(i));
+	jetEta = jet_eta->at(point.at(i));
+	jetPhi = jet_phi->at(point.at(i));
+	distance = sqrt(dist.at(i));
+	ID = particleId.at(i);
+	nt->Fill();
+      }
+    dist.clear();
+    point.clear();
+  }
+  nt->Write();
+  out->Close();
+}
