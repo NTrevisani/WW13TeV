@@ -46,7 +46,6 @@ void test::Initialise() {
   
   
   // To do only once
-  
   float LuminosityPU = 0;
   //fInputParameters->TheNamedFloat("LuminosityPU",LuminosityPU);
   //fPUWeight = new PUWeight(LuminosityPU, Spring11);//Summer11InTime);
@@ -200,14 +199,6 @@ void test::Initialise() {
   h_TwoLeptons_TightFailEvents  = CreateH1F("h_TwoLeptons_TightFailEvents",  "", 10, 0 , 10);
   h_TwoLeptons_TightTightEvents = CreateH1F("h_TwoLeptons_TightTightEvents", "", 10, 0 , 10);
   h_TwoLeptons_TightLooseEvents = CreateH1F("h_TwoLeptons_TightLooseEvents", "", 10, 0 , 10);
-  /*
-  hEff                          = CreateH1F("hEff",                          "", 50, 0 ,  10);
-  hEffHt                        = CreateH1F("hEffHt",                        "", 50, 0 ,  10);
-
-  hEff0bin                      = CreateH1F("hEff0bin",                          "", 50, 0 ,  10);
-  hEffHt0bin                    = CreateH1F("hEffHt0bin",                        "", 50, 0 ,  10);
-  */
-
 
   //Isolation Plots
   //-----------------------------------------------------------------------------
@@ -256,6 +247,11 @@ void test::InsideLoop() {
     fullpmet = pfType1Met * sin(dphimin);
   else 
     fullpmet = pfType1Met;
+
+  if (dphimin < TMath::Pi() / 2)
+    trkpmet = trkMet * sin(dphimin);
+  else
+    trkpmet = trkMet;
   
    Float_t mpmet = min(trkpmet,fullpmet);
    
@@ -265,10 +261,12 @@ void test::InsideLoop() {
    for (int i = 0; i < njet; ++i)
      if(std_vector_jet_pt->at(i) > 0)
        Ht += std_vector_jet_pt->at(i);
-   
+
+   //Defining Isolation
+   //--------------------------------------------------------------------------
+
    Float_t isoOne = 1.;
    Float_t isoZero = 1.;
-   
    
    if(std_vector_lepton_pt->size() > 1){
      if(std_vector_lepton_neutralHadronIso->at(0) + std_vector_lepton_photonIso->at(0) - 0.5 * std_vector_lepton_sumPUPt->at(0) > 0)
@@ -326,23 +324,24 @@ void test::InsideLoop() {
      hphotonEl->Fill(std_vector_lepton_photonIso->at(1));
      hPUEl->Fill(std_vector_lepton_sumPUPt->at(1));
    }
-  
-    
-  // The selection begins here
-  //--------------------------------------------------------------------------
+
+   // The selection begins here
+   //--------------------------------------------------------------------------
   
    if (std_vector_lepton_pt->at(0) > 20)
      if (std_vector_lepton_pt->at(1) > 20) 
-       if (ch1*ch2 < 0)
-	 if (std_vector_lepton_isTightMuon->at(0) && fabs(std_vector_lepton_id->at(0)) == 13 && isoZero < 0.12 || fabs(std_vector_lepton_id->at(0)) == 11)
-	   if (std_vector_lepton_isTightMuon->at(1) && fabs(std_vector_lepton_id->at(1)) == 13 && isoOne < 0.12 || fabs(std_vector_lepton_id->at(1)) == 11)
+       if (ch1*ch2 > 0)
+	 if (std_vector_lepton_isTightMuon->at(0))
+//&& fabs(std_vector_lepton_id->at(0)) == 13 && isoZero < 0.12 || fabs(std_vector_lepton_id->at(0)) == 11)
+	   if (std_vector_lepton_isTightMuon->at(1))
+//&& fabs(std_vector_lepton_id->at(1)) == 13 && isoOne < 0.12 || fabs(std_vector_lepton_id->at(1)) == 11)
 	     if (isoZero < 0.12)
 	       if (isoOne < 0.12)
 	         if ( (SelectedChannel == -1)                                   || 
 		      (channel == SelectedChannel)                              || 
 		      (SelectedChannel == 4 && (channel == 2 || channel == 3) ) || 
 		      (SelectedChannel == 5 && (channel == 0 || channel == 1) ) 
-		      )//chooses the right decay channel 
+		      )
  
 		{
 		  
@@ -362,7 +361,7 @@ void test::InsideLoop() {
 		  hMtTwoLeptonsLevel             ->Fill(mth,       totalW);
 		  hNJets30TwoLeptonsLevel        ->Fill(njet,      totalW);
 		  hpfMetTwoLeptonsLevel          ->Fill(pfType1Met,totalW);
-		  //		  hppfMetTwoLeptonsLevel         ->Fill(ppfmet,    totalW);
+		  //hppfMetTwoLeptonsLevel         ->Fill(ppfmet,    totalW);
 		  hchMetTwoLeptonsLevel          ->Fill(chmet,     totalW);
 		  hpchMetTwoLeptonsLevel         ->Fill(pchmet,    totalW);
 		  hpminMetTwoLeptonsLevel        ->Fill(mpmet,     totalW);
@@ -388,46 +387,37 @@ void test::InsideLoop() {
 			hWLowMinv->Fill(1, totalW);
 			hWeffLowMinv->Fill(1, efficiencyW);
 			
-			hWZVeto->Fill(1, totalW); 
-			hWeffZVeto->Fill(1, efficiencyW); 
-			
-			
-			hWpMetCut->Fill(1, totalW);
-			hWeffpMetCut->Fill(1, efficiencyW);		  
-			
 			if (dphiv || channel == 2 || channel == 3) {
 			      
 			  hWDeltaPhiJet->Fill(1, totalW);
 			  hWeffDeltaPhiJet->Fill(1, efficiencyW);
-			  
-			  hWPtll->Fill(1, totalW);
-			  hWeffPtll->Fill(1, efficiencyW);
-			  
-			  hWJetVeto->Fill(1, totalW);
-			  hWeffJetVeto->Fill(1, efficiencyW);
-			  
-			  hWnJets->Fill(njet, totalW);
-			  hWeffnJets->Fill(njet, efficiencyW);
-				  
-			  hWnBtaggedJets->Fill(nbjet, totalW);
-			  hWeffnBtaggedJets->Fill(nbjet, efficiencyW);
-			  
-			  for (Int_t jetNumber = 0; jetNumber < 3 ; ++jetNumber){
-			    if (jetbin >= 3) jetbin = 2;
-			    if(jetNumber == jetbin){
-			      hHt[jetNumber]->Fill(Ht,totalW);				    
+			 
+			  if ( ptll>30 && (!sameflav || ptll>45) ) {
+			    
+			    hWPtll->Fill(1, totalW);			    
+			    hWeffPtll->Fill(1, efficiencyW);			    
+
+			    hWnJets->Fill(njet, totalW);
+			    hWeffnJets->Fill(njet, efficiencyW);
+			    
+			    hWnBtaggedJets->Fill(nbjet, totalW);
+			    hWeffnBtaggedJets->Fill(nbjet, efficiencyW);
+			    
+			    for (Int_t jetNumber = 0; jetNumber < 3 ; ++jetNumber){
+			      if (jetbin >= 3) jetbin = 2;
+			      if(jetNumber == jetbin){
+				hHt[jetNumber]->Fill(Ht,totalW);				    
+			      }
 			    }
-			  }
 			  
 			  hHt[3]->Fill(Ht,totalW);				    
-				  
-			  
+			  /*
 			  hWTopTagging->Fill(1, totalW);
 			  hWeffTopTagging->Fill(1, efficiencyW);
 			  
 			  hWSoftMuVeto->Fill(1, totalW);
 			  hWeffSoftMuVeto->Fill(1, efficiencyW);
-			  
+			  */
 			  hHtAfter[3]->Fill(Ht,totalW);				    
 			  
 			  hPtLepton1WWLevelNoHt[3]      ->Fill(pt1,       totalW);
@@ -437,7 +427,7 @@ void test::InsideLoop() {
 			  hMtWWLevelNoHt[3]             ->Fill(mth,       totalW);
 			  hNJets30WWLevelNoHt[3]        ->Fill(jetbin,    totalW);
 			  hpfMetWWLevelNoHt[3]          ->Fill(pfType1Met,totalW);
-			  //			  hppfMetWWLevelNoHt[3]         ->Fill(ppfmet,    totalW);
+			  //hppfMetWWLevelNoHt[3]         ->Fill(ppfmet,    totalW);
 			  hchMetWWLevelNoHt[3]          ->Fill(chmet,     totalW);
 			  hpchMetWWLevelNoHt[3]         ->Fill(pchmet,    totalW);
 			  hpminMetWWLevelNoHt[3]        ->Fill(mpmet,     totalW);
@@ -487,9 +477,7 @@ void test::InsideLoop() {
 			    hDeltaRLeptonsWWLevelHtPlus[3]  ->Fill(drll,      totalW);
 			    hDeltaPhiLeptonsWWLevelHtPlus[3]->Fill(dphill,    totalW);
 			    hDPhiPtllJetWWLevelHtPlus[3]    ->Fill(dphilljet, totalW);
-			    //hWnJetsBvetoAfterHtPlus       ->Fill(njet,      totalW);
-			    //hWeffnJetsBvetoAfterHtPlus    ->Fill(njet, efficiencyW);					
-			    hEffHtPlus[3]                 ->Fill(1,    efficiencyW);					
+			    hEffHtPlus[3]                   ->Fill(1,    efficiencyW);					
 			  }
 			  
 			  for (Int_t jetNumber = 0; jetNumber < 3 ; ++jetNumber){
@@ -504,7 +492,7 @@ void test::InsideLoop() {
 			      hMtWWLevelNoHt[jetNumber]             ->Fill(mth,       totalW);
 			      hNJets30WWLevelNoHt[jetNumber]        ->Fill(jetNumber, totalW);
 			      hpfMetWWLevelNoHt[jetNumber]          ->Fill(pfType1Met,totalW);
-			      //			      hppfMetWWLevelNoHt[jetNumber]         ->Fill(ppfmet,    totalW);
+			      //hppfMetWWLevelNoHt[jetNumber]         ->Fill(ppfmet,    totalW);
 			      hchMetWWLevelNoHt[jetNumber]          ->Fill(chmet,     totalW);
 			      hpchMetWWLevelNoHt[jetNumber]         ->Fill(pchmet,    totalW);
 			      hpminMetWWLevelNoHt[jetNumber]        ->Fill(mpmet,     totalW);
@@ -523,7 +511,7 @@ void test::InsideLoop() {
 				hMtWWLevel[jetNumber]             ->Fill(mth,       totalW);
 				hNJets30WWLevel[jetNumber]        ->Fill(jetNumber, totalW);
 				hpfMetWWLevel[jetNumber]          ->Fill(pfType1Met,totalW);
-				//				hppfMetWWLevel[jetNumber]         ->Fill(ppfmet,    totalW);
+				//hppfMetWWLevel[jetNumber]         ->Fill(ppfmet,    totalW);
 				hchMetWWLevel[jetNumber]          ->Fill(chmet,     totalW);
 				hpchMetWWLevel[jetNumber]         ->Fill(pchmet,    totalW);
 				hpminMetWWLevel[jetNumber]        ->Fill(mpmet,     totalW);
@@ -543,23 +531,23 @@ void test::InsideLoop() {
 				hMtWWLevelHtPlus[jetNumber]             ->Fill(mth,       totalW);
 				hNJets30WWLevelHtPlus[jetNumber]        ->Fill(jetNumber, totalW);
 				hpfMetWWLevelHtPlus[jetNumber]          ->Fill(pfType1Met,totalW);
-				//				hppfMetWWLevelHtPlus[jetNumber]         ->Fill(ppfmet,    totalW);
+				//hppfMetWWLevelHtPlus[jetNumber]         ->Fill(ppfmet,    totalW);
 				hchMetWWLevelHtPlus[jetNumber]          ->Fill(chmet,     totalW);
 				hpchMetWWLevelHtPlus[jetNumber]         ->Fill(pchmet,    totalW);
 				hpminMetWWLevelHtPlus[jetNumber]        ->Fill(mpmet,     totalW);
 				hDeltaRLeptonsWWLevelHtPlus[jetNumber]  ->Fill(drll,      totalW);
 				hDeltaPhiLeptonsWWLevelHtPlus[jetNumber]->Fill(dphill,    totalW);
 				hDPhiPtllJetWWLevelHtPlus[jetNumber]    ->Fill(dphilljet, totalW);
-				hEffHtPlus[jetNumber]                 ->Fill(1,    efficiencyW);
+				hEffHtPlus[jetNumber]                   ->Fill(1,    efficiencyW);
 			      }
 			    }  					
 			  }
 			  h_WWLevel_TightFailEvents ->Fill(1, totalW); 
+			  }
 			}
 		      }
 		    }
 		  }
-		  
 		  
 		  // Define Normalization Factor for MC samples 
 		  
