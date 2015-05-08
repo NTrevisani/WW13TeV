@@ -18,6 +18,8 @@ CHANNELS="OF"
 
 
 SAMPLES="
+VBF                \
+WW                 \
 QCD                \ 
 Top                \
 WJets              \
@@ -39,14 +41,6 @@ for CHANNEL in $CHANNELS; do
 	mv ${SAMPLE}.root rootFiles/AllJet/${CHANNEL}
   
     done
-
-#    OUTPATH=rootFiles/AllJet/${CHANNEL}
-
-#    Merge some MC files
-#    hadd -f ${OUTPATH}/WW.root     ${OUTPATH}/ggWWto2L.root     ${OUTPATH}/WWTo2L2Nu.root 
-#    hadd -f ${OUTPATH}/WW_pow.root     ${OUTPATH}/ggWWto2L.root     ${OUTPATH}/WWTo2L2Nu_pow.root 
-#    hadd -f ${OUTPATH}/WW_mc.root     ${OUTPATH}/ggWWto2L.root     ${OUTPATH}/WWTo2L2Nu_mcnlo.root
-#    hadd -f ${OUTPATH}/Wgamma.root ${OUTPATH}/WgammaNoStar.root ${OUTPATH}/WgammaStar.root ${OUTPATH}/GamGamWW.root 
 
 done
 

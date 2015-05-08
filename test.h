@@ -110,6 +110,7 @@ class test: public PAFAnalysis{
    TH1F* hDPhiPtllJetWWLevel[4];
    TH1F* hDataEvents[4];
    TH1F* hBackgroundEvents[4];
+   TH1F* hEff[4];
 
    TH1F* hPtLepton1WWLevelNoHt[4];
    TH1F* hPtLepton2WWLevelNoHt[4];
@@ -127,6 +128,25 @@ class test: public PAFAnalysis{
    TH1F* hDPhiPtllJetWWLevelNoHt[4];
    TH1F* hDataEventsNoHt[4];
    TH1F* hBackgroundEventsNoHt[4];
+   TH1F* hEffNoHt[4];
+
+   TH1F* hPtLepton1WWLevelHtPlus[4];
+   TH1F* hPtLepton2WWLevelHtPlus[4];
+   TH1F* hPtDiLeptonWWLevelHtPlus[4];
+   TH1F* hMinvWWLevelHtPlus[4];
+   TH1F* hMtWWLevelHtPlus[4];
+   TH1F* hNJets30WWLevelHtPlus[4];
+   TH1F* hpfMetWWLevelHtPlus[4];
+   TH1F* hppfMetWWLevelHtPlus[4];
+   TH1F* hchMetWWLevelHtPlus[4];
+   TH1F* hpchMetWWLevelHtPlus[4];
+   TH1F* hpminMetWWLevelHtPlus[4];
+   TH1F* hDeltaRLeptonsWWLevelHtPlus[4];
+   TH1F* hDeltaPhiLeptonsWWLevelHtPlus[4];
+   TH1F* hDPhiPtllJetWWLevelHtPlus[4];
+   TH1F* hDataEventsHtPlus[4];
+   TH1F* hBackgroundEventsHtPlus[4];
+   TH1F* hEffHtPlus[4];
 
    TH1F* hHt[4];
    TH1F* hHtAfter[4];
@@ -154,75 +174,27 @@ class test: public PAFAnalysis{
    TH1F* hDeltaPhiLeptonsTwoLeptonsLevel;
    TH1F* hDPhiPtllJetTwoLeptonsLevel;
 
-
    TH1F* h_TwoLeptons_TightFailEvents;
    TH1F* h_TwoLeptons_TightTightEvents;
    TH1F* h_TwoLeptons_TightLooseEvents;
 
-   TH1F* hEff;
-   TH1F* hEffHt;
+   //Isolation Plots
+   //-----------------------------------------------------------------------------
 
-   TH1F* hEff0bin;
-   TH1F* hEffHt0bin;
+   TH1F* hIsoMu;
+   TH1F* hIsoEl;
 
-
-   // Dilepton level differential histograms  
-   //---------------------------------------------------------------------------
-
-   //differential in dilepton (eta, pt, ptll, mll, dphill), jets (jetpt1, njet), transverse mass? 2-jet bin?     
-   /*
-   Double_t pt1bins[8] = {20,40,60,80,100,125,150,200};
-   Double_t eta1bins[9] = {-2.4,-1.8,-1.2,-0.6,0,0.6,1.2,1.8,2.4};
-   Double_t mllbins[9] = {20,40,60,80,100,125,150,175,200};
-   Double_t dphibins[13] = {0,0.25,0.5,0.75,1,1.25,1.5,1.75,2,2.25,2.5,2.75,3};
-   Double_t ptllbins[8] = {30,40,50,60,70,85,120,150};
-   */
-
-   TH1F* hPtLepton1DilepLevel_Diff;
-   TH1F* hEtaLepton1DilepLevel_Diff;
-   TH1F* hDileptonDilepLevel_Diff;
-   TH1F* hMinvDilepLevel_Diff;
-   TH1F* hDeltaPhiDilepLevel_Diff;
-
-
-   // WW level differential histograms
-   //----------------------------------------------------------------------------
-
-   TH1F* hPtLepton1WWLevel_Diff;
-   TH1F* hEtaLepton1WWLevel_Diff;
-   TH1F* hDileptonWWLevel_Diff;
-   TH1F* hMinvWWLevel_Diff;
-   TH1F* hDeltaPhiWWLevel_Diff;
-
-
-   // Data-driven methods: Z+jets 
-   //--------------------------------------------------------------------------
-
-   TH1F* hNinZevents     [numberDYMVACuts];
-   TH1F* hNoutZevents    [numberDYMVACuts];
-   TH1F* hNinLooseZevents[numberDYMVACuts];
-   TH1F* hMassInZevents  [numberDYMVACuts];
-   TH1F* hMassOutZevents [numberDYMVACuts];
-
-   /*
-   for (Int_t nC=0; nC<numberDYMVACuts; nC++) {
-     hNinZevents     [nC] = new TH1F(Form("hNinZevents%.1i",      nC+1 ), "",   3, 0,   3);
-     hNoutZevents    [nC] = new TH1F(Form("hNoutZevents%.1i",     nC+1 ), "",   3, 0,   3);
-     hNinLooseZevents[nC] = new TH1F(Form("hNinLooseZevents%.1i", nC+1 ), "",   3, 0,   3);
-     hMassInZevents  [nC] = new TH1F(Form("hMassInZevents%.1i",   nC+1 ), "", 200, 0, 200);
-     hMassOutZevents [nC] = new TH1F(Form("hMassOutZevents%.1i",  nC+1 ), "", 200, 0, 200);
-
-   */
-
-   // Data-driven methods: Top                                                                                                                                                      
-   //----------------------------------------------------------------------------                                                                                                   
-   TH1F* hTopTaggedEvents;
-   TH1F* hNTopControlRegion;
-   TH1F* hNTopTaggedTopControlRegion;
-
-   TH1F* hbTagDisTopTaggedEvents;
-   TH1F* hbTagDisNTopControlRegion;
-   TH1F* hbTagDisNTopTaggedTopControlRegion;
+   TH1F* hchHadronMu;
+   TH1F* hchHadronEl;
+   
+   TH1F* hneuHadronMu;
+   TH1F* hneuHadronEl;
+   
+   TH1F* hphotonMu;
+   TH1F* hphotonEl;
+   
+   TH1F* hPUMu;
+   TH1F* hPUEl;
 
 
  public:

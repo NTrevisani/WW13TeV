@@ -53,7 +53,7 @@ void RunPROOF_test(double luminosity,
   // * kLite: PROOF Lite mode
   // * kCluster: PROOF Cluter mode
   // * kPoD: PROOF on Demand mode
-  gPAFOptions->proofMode = kLite;
+  gPAFOptions->proofMode = kCluster;
   //
   // Optional parameters for PROOF Cluster (kCluster):
   //   + The number of slots you would like to use (default is 10)
@@ -118,22 +118,35 @@ void RunPROOF_test(double luminosity,
     
     
     if (theSample == "Top") {
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_stepB_TBarToLeptons_s.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_stepB_TBarToLeptons_t.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_stepB_TToLeptons_s.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_stepB_TToLeptons_t.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TBarToLeptons_s.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TBarToLeptons_t.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TToLeptons_s.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TToLeptons_t.root");
     }
-    
+
+    else if (theSample == "WW"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_WWTo2L2Nu.root");
+    }
+
+    else if (theSample == "VBF"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_VBF125.root");
+    }
+
     else if (theSample == "QCD"){
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_stepB_QCD_Pt-20toInf.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_QCD.root");
     }
 
     else if (theSample == "WJets"){
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_stepB_WJetsToLNu.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_WJetsToLNu.root");
     }
-
+<
     else if (theSample == "TTJets"){
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_stepB_TTJets.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_0.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_1.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_2.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_3.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_4.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_5.root");
     }
 
     else if (theSample == "WJets8TeV"){
