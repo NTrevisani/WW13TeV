@@ -139,19 +139,14 @@ void RunPROOF_test(double luminosity,
     else if (theSample == "WJets"){
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_WJetsToLNu.root");
     }
-<
+
     else if (theSample == "TTJets"){
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_0.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_1.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_2.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_3.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_4.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets_5.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_TTJets.root");
     }
 
     else if (theSample == "WJets8TeV"){
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/tier3data/LatinosSkims/ReducedTrees/R53X_S1_V08_S2_V09_S3_V13/MC_LooseLoose/4L/latino_080_WJetsToLNuMad.root");
-    }    
+      }    
   }
     else
       return;

@@ -35,13 +35,13 @@ int macroSSOS(TString plotName = "hWnJetsBvetoAfterHt"){
   /*
   hss -> Add((TH1F*)QCDss->Get(plotName));
   hos -> Add((TH1F*)QCDos->Get(plotName));
-  */
+  
   hss -> Add((TH1F*)Topss->Get(plotName));
   hos -> Add((TH1F*)Topos->Get(plotName));
 
   hss -> Add((TH1F*)TTJetsss->Get(plotName));
   hos -> Add((TH1F*)TTJetsos->Get(plotName));
-  
+*/  
   hss -> Add((TH1F*)WJetsss->Get(plotName));
   hos -> Add((TH1F*)WJetsos->Get(plotName));
 

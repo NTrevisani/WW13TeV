@@ -63,9 +63,7 @@ void test::Initialise() {
   
   else if (flavorChannel == "All" ) SelectedChannel = -1;
   
-  
   G_Debug_DefineAnalysisVariables = false;
-
   
   //------------------------------------------------------------------------------
   // Create histos
@@ -186,7 +184,7 @@ void test::Initialise() {
   hPtDiLeptonTwoLeptonsLevel      = CreateH1F("hPtDiLeptonTwoLeptonsLevel",      "", 200, 0, 200);
   hMinvTwoLeptonsLevel            = CreateH1F("hMinvTwoLeptonsLevel",            "", 200, 0, 200);
   hMtTwoLeptonsLevel              = CreateH1F("hMtTwoLeptonsLevel",              "", 250, 0, 250);
-  hNJets30TwoLeptonsLevel         = CreateH1F("hNJetsPF30TwoLeptonsLevel",       "",  10, 0,  10);
+  hNJets30TwoLeptonsLevel         = CreateH1F("hNJets30TwoLeptonsLevel",         "",  10, 0,  10);
   hpfMetTwoLeptonsLevel           = CreateH1F("hpfMetTwoLeptonsLevel",           "", 150, 0, 150);
   hppfMetTwoLeptonsLevel          = CreateH1F("hppfMetTwoLeptonsLevel",          "", 150, 0, 150);
   hchMetTwoLeptonsLevel           = CreateH1F("hchMetTwoLeptonsLevel",           "", 150, 0, 150);
@@ -203,8 +201,8 @@ void test::Initialise() {
   //Isolation Plots
   //-----------------------------------------------------------------------------
 
-  hIsoMu = CreateH1F("hIsoMu","", 10000, 0., 100);
-  hIsoEl = CreateH1F("hIsoEl","", 10000, 0., 100);
+  hIsoMu = CreateH1F("hIsoMu","", 100000, 0., 100);
+  hIsoEl = CreateH1F("hIsoEl","", 100000, 0., 100);
 
   hchHadronMu = CreateH1F("hchHadronMu","", 10000, 0., 100);
   hchHadronEl = CreateH1F("hchHadronEl","", 10000, 0., 100);
@@ -222,7 +220,6 @@ void test::Initialise() {
 // The InsideLoop() function is called for each entry in the tree to be processed  
 void test::InsideLoop() {
 
-
   TString TheSample = GetInputParameters()->TheNamedString("theSample");
   
   Double_t efficiencyW = effW * triggW;
@@ -234,8 +231,6 @@ void test::InsideLoop() {
   h_n_PV -> Fill(1,efficiencyW);  
   
   Int_t dphiv = (njet <= 1 || (njet > 1 && dphilljetjet < 165.*TMath::DegToRad()));
-  
-  Float_t metvar = (njet <= 1) ? mpmet : pfType1Met;
   
   Float_t jetbin = njet;
   
@@ -254,7 +249,9 @@ void test::InsideLoop() {
     trkpmet = trkMet;
   
    Float_t mpmet = min(trkpmet,fullpmet);
-   
+
+   Float_t metvar = (njet <= 1) ? mpmet : pfType1Met;
+  
    Float_t Ht = std_vector_lepton_pt->at(0) + std_vector_lepton_pt->at(1) + pfType1Met;
    
    if(njet > 10) njet = 10;
@@ -294,7 +291,7 @@ void test::InsideLoop() {
    }
    
    if(fabs(std_vector_lepton_id->at(0)) == 13){
-     hIsoMu->Fill(isoZero);
+     //hIsoMu->Fill(isoZero);
      hchHadronMu->Fill(std_vector_lepton_chargedHadronIso->at(0));
      hneuHadronMu->Fill(std_vector_lepton_neutralHadronIso->at(0));
      hphotonMu->Fill(std_vector_lepton_photonIso->at(0));
@@ -325,26 +322,37 @@ void test::InsideLoop() {
      hPUEl->Fill(std_vector_lepton_sumPUPt->at(1));
    }
 
+   //reject background prompt-prompt events
+   Float_t prompt = 1;
+   if(TheSample == "TTJets" || TheSample == "Top" || TheSample == "QCD" || TheSample == "WJets")
+   if(fabs(std_vector_leptonGen_mpid -> at(0)) == 24 && 
+      fabs(std_vector_leptonGen_mstatus -> at(0)) > 20 && 
+      fabs(std_vector_leptonGen_mstatus -> at(0)) < 30)
+	   if(fabs(std_vector_leptonGen_mpid -> at(1)) == 24 && 
+	      fabs(std_vector_leptonGen_mstatus -> at(1)) > 20 && 
+	      fabs(std_vector_leptonGen_mstatus -> at(1)) < 30)
+		   prompt = 0;
+		   
    // The selection begins here
    //--------------------------------------------------------------------------
-  
    if (std_vector_lepton_pt->at(0) > 20)
      if (std_vector_lepton_pt->at(1) > 20) 
-       if (ch1*ch2 > 0)
-	 if (std_vector_lepton_isTightMuon->at(0))
-//&& fabs(std_vector_lepton_id->at(0)) == 13 && isoZero < 0.12 || fabs(std_vector_lepton_id->at(0)) == 11)
-	   if (std_vector_lepton_isTightMuon->at(1))
-//&& fabs(std_vector_lepton_id->at(1)) == 13 && isoOne < 0.12 || fabs(std_vector_lepton_id->at(1)) == 11)
-	     if (isoZero < 0.12)
-	       if (isoOne < 0.12)
-	         if ( (SelectedChannel == -1)                                   || 
-		      (channel == SelectedChannel)                              || 
-		      (SelectedChannel == 4 && (channel == 2 || channel == 3) ) || 
-		      (SelectedChannel == 5 && (channel == 0 || channel == 1) ) 
-		      )
- 
-		{
-		  
+       if (ch1*ch2 < 0)
+	 //if (std_vector_lepton_BestTrackdxy -> at(0) < 0.01 && std_vector_lepton_BestTrackdz -> at(0) < 0.1)
+	 //if (std_vector_lepton_BestTrackdxy -> at(1) < 0.01 && std_vector_lepton_BestTrackdz -> at(1) < 0.1)
+	 //if (prompt == 1)
+	 //if (std_vector_lepton_isTightMuon->at(0) == 1)// && std_vector_lepton_isTightMuon->at(1) == 0 || 
+	 //if (std_vector_lepton_isTightMuon->at(1) == 1)// && std_vector_lepton_isTightMuon->at(1) == 1)
+	 //if (isoZero < 0.12)
+	 //if (isoOne < 0.12)
+		       if ( (SelectedChannel == -1)                                   || 
+			    (channel == SelectedChannel)                              || 
+			    (SelectedChannel == 4 && (channel == 2 || channel == 3) ) || 
+			    (SelectedChannel == 5 && (channel == 0 || channel == 1) ) 
+			    )
+			 {
+			   hNJets30TwoLeptonsLevel        ->Fill(njet,      totalW);
+			     
 		  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		  //
 		  // Main analisis
@@ -359,7 +367,7 @@ void test::InsideLoop() {
 		  hPtDiLeptonTwoLeptonsLevel     ->Fill(ptll,      totalW);
 		  hMinvTwoLeptonsLevel           ->Fill(mll,       totalW);
 		  hMtTwoLeptonsLevel             ->Fill(mth,       totalW);
-		  hNJets30TwoLeptonsLevel        ->Fill(njet,      totalW);
+
 		  hpfMetTwoLeptonsLevel          ->Fill(pfType1Met,totalW);
 		  //hppfMetTwoLeptonsLevel         ->Fill(ppfmet,    totalW);
 		  hchMetTwoLeptonsLevel          ->Fill(chmet,     totalW);
@@ -386,13 +394,15 @@ void test::InsideLoop() {
 			
 			hWLowMinv->Fill(1, totalW);
 			hWeffLowMinv->Fill(1, efficiencyW);
-			
-			if (dphiv || channel == 2 || channel == 3) {
+
+			if (mpmet > 20){
+
+			  if (dphiv || channel == 2 || channel == 3) {
 			      
 			  hWDeltaPhiJet->Fill(1, totalW);
 			  hWeffDeltaPhiJet->Fill(1, efficiencyW);
 			 
-			  if ( ptll>30 && (!sameflav || ptll>45) ) {
+			  if ( ptll>30 /*&& (!sameflav || ptll>45)*/ ) {
 			    
 			    hWPtll->Fill(1, totalW);			    
 			    hWeffPtll->Fill(1, efficiencyW);			    
@@ -403,6 +413,8 @@ void test::InsideLoop() {
 			    hWnBtaggedJets->Fill(nbjet, totalW);
 			    hWeffnBtaggedJets->Fill(nbjet, efficiencyW);
 			    
+			    /*if (bveto_mu) */{
+
 			    for (Int_t jetNumber = 0; jetNumber < 3 ; ++jetNumber){
 			      if (jetbin >= 3) jetbin = 2;
 			      if(jetNumber == jetbin){
@@ -448,7 +460,7 @@ void test::InsideLoop() {
 			    hMtWWLevel[3]             ->Fill(mth,       totalW);
 			    hNJets30WWLevel[3]        ->Fill(jetbin,    totalW);
 			    hpfMetWWLevel[3]          ->Fill(pfType1Met,totalW);
-			    //			    hppfMetWWLevel[3]         ->Fill(ppfmet,    totalW);
+			    //hppfMetWWLevel[3]         ->Fill(ppfmet,    totalW);
 			    hchMetWWLevel[3]          ->Fill(chmet,     totalW);
 			    hpchMetWWLevel[3]         ->Fill(pchmet,    totalW);
 			    hpminMetWWLevel[3]        ->Fill(mpmet,     totalW);
@@ -543,12 +555,14 @@ void test::InsideLoop() {
 			    }  					
 			  }
 			  h_WWLevel_TightFailEvents ->Fill(1, totalW); 
+			    }
 			  }
+			}
 			}
 		      }
 		    }
 		  }
-		  
+			 }		       
 		  // Define Normalization Factor for MC samples 
 		  
 		  //------------------------------------------------------------------------------
@@ -576,9 +590,9 @@ void test::InsideLoop() {
 		  //------------------------------------------------------------------------------
 		  
 		  
-		}
+			   
+		       
 }// end inside Loop
-
 
 
 
@@ -699,7 +713,7 @@ void test::SetDataMembersAtTermination() {
   hPtDiLeptonTwoLeptonsLevel      = ((TH1F*) FindOutput("hPtDiLeptonTwoLeptonsLevel"));
   hMinvTwoLeptonsLevel            = ((TH1F*) FindOutput("hMinvTwoLeptonsLevel"));
   hMtTwoLeptonsLevel              = ((TH1F*) FindOutput("hMtTwoLeptonsLevel"));
-  hNJets30TwoLeptonsLevel         = ((TH1F*) FindOutput("hNJetsPF30TwoLeptonsLevel"));
+  hNJets30TwoLeptonsLevel         = ((TH1F*) FindOutput("hNJets30TwoLeptonsLevel"));
   hpfMetTwoLeptonsLevel           = ((TH1F*) FindOutput("hpfMetTwoLeptonsLevel"));
   hppfMetTwoLeptonsLevel          = ((TH1F*) FindOutput("hppfMetTwoLeptonsLevel"));
   hchMetTwoLeptonsLevel           = ((TH1F*) FindOutput("hchMetTwoLeptonsLevel"));

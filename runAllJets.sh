@@ -18,13 +18,13 @@ CHANNELS="OF"
 
 
 SAMPLES="
-VBF                \
-WW                 \
 QCD                \ 
 Top                \
 WJets              \
 TTJets             \
 "
+#VBF                \
+#WW                 \
 
 #rm -rf rootfiles/${NJETS}jet
 

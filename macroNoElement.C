@@ -74,8 +74,8 @@ void macroNoElement(){
   command = command + "*.root> inputNoElement.tmp"; 
   gSystem -> Exec(command); 
 
-  TString command = "ls latino/";
-  command = command + "*.root> inputHere.tmp";
+  TString command = "ls /gpfs/csic_projects/cms/trevisanin/newLatino/";
+  command = command + "> inputHere.tmp";
   gSystem -> Exec(command);
   
   ifstream inFile("inputNoElement.tmp");
