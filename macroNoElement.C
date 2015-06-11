@@ -1,4 +1,4 @@
-//should copy a bad root file in a working root file
+//Clone the latino tree into a new one without the PAF-hated branches
 //run typing:  root -l macroNoElement.C                                                                                                                  
 
 #include "TFile.h"
@@ -43,7 +43,6 @@ void NoElement(TString name){
     else 
       tDark->SetBranchStatus(nBranch,1);
       ++cont;    
-      //cout<<cont<<endl;
   }
   
   TString newName = name;
@@ -52,7 +51,6 @@ void NoElement(TString name){
   cout<<newName<<endl;
 
   TFile *newfile = new TFile(newName,"recreate");
-
   
   cout<<"trabajando..."<<endl;
   TTree *newtree = tDark->CloneTree();
@@ -79,7 +77,6 @@ void macroNoElement(){
   gSystem -> Exec(command);
   
   ifstream inFile("inputNoElement.tmp");
-
 
   std::string line;
   std::string lineHere;

@@ -111,6 +111,8 @@ class test: public PAFAnalysis{
    TH1F* hDataEvents[4];
    TH1F* hBackgroundEvents[4];
    TH1F* hEff[4];
+   TH1F* hSigMu[4];
+   TH1F* hSigEl[4];
 
    TH1F* hPtLepton1WWLevelNoHt[4];
    TH1F* hPtLepton2WWLevelNoHt[4];
@@ -129,6 +131,8 @@ class test: public PAFAnalysis{
    TH1F* hDataEventsNoHt[4];
    TH1F* hBackgroundEventsNoHt[4];
    TH1F* hEffNoHt[4];
+   TH1F* hSigMuNoHt[4];
+   TH1F* hSigElNoHt[4];
 
    TH1F* hPtLepton1WWLevelHtPlus[4];
    TH1F* hPtLepton2WWLevelHtPlus[4];
@@ -147,6 +151,8 @@ class test: public PAFAnalysis{
    TH1F* hDataEventsHtPlus[4];
    TH1F* hBackgroundEventsHtPlus[4];
    TH1F* hEffHtPlus[4];
+   TH1F* hSigMuHtPlus[4];
+   TH1F* hSigElHtPlus[4];
 
    TH1F* hHt[4];
    TH1F* hHtAfter[4];

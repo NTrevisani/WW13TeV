@@ -21,7 +21,8 @@ void RunPROOF_test(double luminosity,
 		   const char* data, 
 		   TString  theSample,  
 		   Int_t JetChannel,
-		   TString FlavorChannel) 
+		   TString FlavorChannel,
+		   TString proofMode_) 
 {
  
   // This loads all the PROOF Analysis Framework utilities
@@ -53,7 +54,16 @@ void RunPROOF_test(double luminosity,
   // * kLite: PROOF Lite mode
   // * kCluster: PROOF Cluter mode
   // * kPoD: PROOF on Demand mode
-  gPAFOptions->proofMode = kCluster;
+  if (proofMode_ == "Cluster" || proofMode_ == "kCluster" || proofMode_ == "cluster" || proofMode_ == "kcluster")
+    gPAFOptions->proofMode = kCluster;
+  else if (proofMode_ == "Sequential" || proofMode_ == "kSequential" || proofMode_ == "sequential" || proofMode_ == "ksequential")
+    gPAFOptions->proofMode = kSequential;
+  else if (proofMode_ == "Lite" || proofMode_ == "kLite" || proofMode_ == "lite" || proofMode_ == "klite")
+    gPAFOptions->proofMode = kLite;
+  else{
+    cout<<"Please select a valid PROOF operating mode: Cluster, Sequential, or Lite"<<endl;
+    return;
+  }
   //
   // Optional parameters for PROOF Cluster (kCluster):
   //   + The number of slots you would like to use (default is 10)

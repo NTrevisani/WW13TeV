@@ -24,6 +24,121 @@
 
 #include "TDatabasePDG.h"
 
+//lepton ID
+bool IsTightLepton(int k,
+		   std::vector<float>* vector_lepton_id,  
+		   std::vector<float>* vector_lepton_isTightMuon,
+		   std::vector<float>* vector_electron_deltaEtaIn,
+		   std::vector<float>* vector_electron_sigmaIetaIeta,
+		   std::vector<float>* vector_electron_HoE,
+		   std::vector<float>* vector_electron_d0,
+		   std::vector<float>* vector_electron_dz,
+		   std::vector<float>* vector_electron_ooEooP,
+		   std::vector<float>* vector_electron_passConversion,
+		   std::vector<float>* vector_electron_scEta,
+		   std::vector<float>* vector_electron_deltaPhiIn
+		   )
+{
+  bool is_tight_lepton = false;
+
+  // Muon tight ID
+  if (fabs(vector_lepton_id->at(k)) == 13)
+    {
+      is_tight_lepton = vector_lepton_isTightMuon->at(k);
+    }
+  // Electron cut based medium ID
+  else if (fabs(vector_lepton_id->at(k)) == 11)
+    {
+      float aeta = fabs(vector_electron_scEta->at(k));
+
+      if (aeta <= 1.479)
+	{                                                   //V1         //V2
+	  if (fabs(vector_electron_deltaEtaIn->at(k)) < 0.007641 &&  //0.008925 &&
+	      fabs(vector_electron_deltaPhiIn->at(k)) < 0.032643 &&  //0.035973 &&
+	      vector_electron_sigmaIetaIeta->at(k)    < 0.010399 &&  //0.009996 &&
+	      vector_electron_HoE->at(k)              < 0.060662 &&  //0.050537 &&
+	      fabs(vector_electron_d0->at(k))         < 0.011811 &&  //0.012235 &&
+	      fabs(vector_electron_dz->at(k))         < 0.070775 &&  //0.042020 &&
+	      fabs(vector_electron_ooEooP->at(k))     < 0.153897 &&  //0.091942 &&
+	      !vector_electron_passConversion->at(k))  // Includes expectedMissingInnerHits
+	    {
+	      is_tight_lepton = true;
+	    }
+	}
+      else if (aeta > 1.479 && aeta < 2.5)
+	{                                                   //V1         //V2
+	  if (fabs(vector_electron_deltaEtaIn->at(k)) < 0.009285 &&  //0.007429 &&
+	      fabs(vector_electron_deltaPhiIn->at(k)) < 0.042447 &&  //0.067879 &&
+	      vector_electron_sigmaIetaIeta->at(k)    < 0.029524 &&  //0.030135 &&
+	      vector_electron_HoE->at(k)              < 0.104263 &&  //0.086782 &&
+	      fabs(vector_electron_d0->at(k))         < 0.051682 &&  //0.036719 &&
+	      fabs(vector_electron_dz->at(k))         < 0.180720 &&  //0.138142 &&
+	      fabs(vector_electron_ooEooP->at(k))     < 0.137468 &&  //0.100683 &&
+	      !vector_electron_passConversion->at(k))  // Includes expectedMissingInnerHits
+	    {
+	      is_tight_lepton = true;
+	    }
+	}
+    }
+
+  return is_tight_lepton;
+}
+
+//lepton isolation
+bool IsIsolatedLepton(int k,
+		      std::vector<float>* vector_lepton_chargedHadronIso,
+		      std::vector<float>* vector_lepton_neutralHadronIso,
+		      std::vector<float>* vector_lepton_sumPUPt,
+		      std::vector<float>* vector_lepton_pt,
+		      std::vector<float>* vector_lepton_id,
+		      std::vector<float>* vector_lepton_eta,
+		      std::vector<float>* vector_lepton_photonIso,
+		      float jetRho_
+)
+{
+  float pt = vector_lepton_pt->at(k);
+  float id = vector_lepton_id->at(k);
+
+  float isolation = 999;
+
+  bool is_isolated_lepton = false;
+
+  if (fabs(id) == 13)
+    {
+      isolation =
+	vector_lepton_chargedHadronIso->at(k) +
+	max(float(0.0),
+	    float(vector_lepton_photonIso->at(k) +
+		  vector_lepton_neutralHadronIso->at(k) -
+		  0.5*vector_lepton_sumPUPt->at(k)));
+
+      is_isolated_lepton = (isolation/pt < 0.12);
+    }
+  else if (fabs(id) == 11)
+    {
+      float aeta = fabs(vector_lepton_eta->at(k));
+      
+      float effective_area = -999;
+      
+      if      (aeta >  2.2)               effective_area = 0.2680;
+      else if (aeta >= 2.0 && aeta < 2.2) effective_area = 0.1565;
+      else if (aeta >= 1.3 && aeta < 2.0) effective_area = 0.1077;
+      else if (aeta >= 0.8 && aeta < 1.3) effective_area = 0.1734;
+      else if (aeta <  0.8)               effective_area = 0.1830;
+
+      isolation =
+	vector_lepton_chargedHadronIso->at(k) +
+	max(float(0.0),
+	    float(vector_lepton_photonIso->at(k) +
+		  vector_lepton_neutralHadronIso->at(k) -
+		  jetRho_*effective_area));
+
+      is_isolated_lepton = (isolation/pt < 0.15);
+    }
+  
+  return is_isolated_lepton;
+}
+
 
 test::test(TTree* tree):
   PAFAnalysis(tree) {
@@ -129,6 +244,8 @@ void test::Initialise() {
     hDataEvents[nC]             = CreateH1F(Form("hDataEvents%.1i", nC),             "",  32, 0, 3.2);
     hBackgroundEvents[nC]       = CreateH1F(Form("hBackgroundEvents%.1i", nC),       "",  32, 0, 3.2);
     hEff[nC]                    = CreateH1F(Form("hEff%.1i", nC),                     "",  100, 0, 10);
+    hSigEl[nC]                  = CreateH1F(Form("hSigEl%.1i", nC),                   "", 1000,0.,500);
+    hSigMu[nC]                  = CreateH1F(Form("hSigMu%.1i", nC),                   "", 1000,0.,500);
 
     hPtLepton1WWLevelNoHt[nC]       = CreateH1F(Form("hPtLepton1WWLevelNoHt%.1i", nC),       "", 200, 0, 200);
     hPtLepton2WWLevelNoHt[nC]       = CreateH1F(Form("hPtLepton2WWLevelNoHt%.1i", nC),       "", 200, 0, 200);
@@ -147,6 +264,8 @@ void test::Initialise() {
     hDataEventsNoHt[nC]             = CreateH1F(Form("hDataEventsNoHt%.1i", nC),             "",  32, 0, 3.2);
     hBackgroundEventsNoHt[nC]       = CreateH1F(Form("hBackgroundEventsNoHt%.1i", nC),       "",  32, 0, 3.2);
     hEffNoHt[nC]                    = CreateH1F(Form("hEffNoHt%.1i", nC),                     "",  100, 0, 10);
+    hSigElNoHt[nC]                  = CreateH1F(Form("hSigElNoHt%.1i", nC),                   "", 1000,0.,500);
+    hSigMuNoHt[nC]                  = CreateH1F(Form("hSigMuNoHt%.1i", nC),                   "", 1000,0.,500);
 
     hPtLepton1WWLevelHtPlus[nC]       = CreateH1F(Form("hPtLepton1WWLevelHtPlus%.1i", nC),       "", 200, 0, 200);
     hPtLepton2WWLevelHtPlus[nC]       = CreateH1F(Form("hPtLepton2WWLevelHtPlus%.1i", nC),       "", 200, 0, 200);
@@ -165,6 +284,8 @@ void test::Initialise() {
     hDataEventsHtPlus[nC]             = CreateH1F(Form("hDataEventsHtPlus%.1i", nC),             "",  32, 0, 3.2);
     hBackgroundEventsHtPlus[nC]       = CreateH1F(Form("hBackgroundEventsHtPlus%.1i", nC),       "",  32, 0, 3.2);
     hEffHtPlus[nC]                    = CreateH1F(Form("hEffHtPlus%.1i", nC),                     "",  100, 0, 10);
+    hSigElHtPlus[nC]                  = CreateH1F(Form("hSigElHtPlus%.1i", nC),                   "", 1000,0.,500);
+    hSigMuHtPlus[nC]                  = CreateH1F(Form("hSigMuHtPlus%.1i", nC),                   "", 1000,0.,500);
 
     hHt[nC]                     = CreateH1F(Form("hHt%.1i",               nC),       "", 3000, 0, 3000);
     hHtAfter[nC]                = CreateH1F(Form("hHtAfter%.1i",          nC),       "", 3000, 0, 3000);
@@ -261,7 +382,7 @@ void test::InsideLoop() {
 
    //Defining Isolation
    //--------------------------------------------------------------------------
-
+   /*
    Float_t isoOne = 1.;
    Float_t isoZero = 1.;
    
@@ -321,7 +442,9 @@ void test::InsideLoop() {
      hphotonEl->Fill(std_vector_lepton_photonIso->at(1));
      hPUEl->Fill(std_vector_lepton_sumPUPt->at(1));
    }
-
+   */
+   /*
+   //------------------------------------------------------------------------------
    //reject background prompt-prompt events
    Float_t prompt = 1;
    if(TheSample == "TTJets" || TheSample == "Top" || TheSample == "QCD" || TheSample == "WJets")
@@ -332,12 +455,60 @@ void test::InsideLoop() {
 	      fabs(std_vector_leptonGen_mstatus -> at(1)) > 20 && 
 	      fabs(std_vector_leptonGen_mstatus -> at(1)) < 30)
 		   prompt = 0;
+   */
 		   
    // The selection begins here
    //--------------------------------------------------------------------------
    if (std_vector_lepton_pt->at(0) > 20)
      if (std_vector_lepton_pt->at(1) > 20) 
-       if (ch1*ch2 < 0)
+       if (ch1*ch2 > 0)
+	 if (IsTightLepton(0,
+			   std_vector_lepton_id,
+			   std_vector_lepton_isTightMuon,
+			   std_vector_electron_deltaEtaIn,
+			   std_vector_electron_sigmaIetaIeta,
+			   std_vector_electron_HoE,
+			   std_vector_electron_d0,
+			   std_vector_electron_dz,
+			   std_vector_electron_ooEooP,
+			   std_vector_electron_passConversion,
+			   std_vector_electron_scEta,
+			   std_vector_electron_deltaPhiIn
+			   ))  
+	   if(IsIsolatedLepton(0,
+			       std_vector_lepton_chargedHadronIso,
+			       std_vector_lepton_neutralHadronIso,
+			       std_vector_lepton_sumPUPt,
+			       std_vector_lepton_pt,
+			       std_vector_lepton_id,
+			       std_vector_lepton_eta,
+			       std_vector_lepton_photonIso,
+			       jetRho
+			       ))
+
+	     if (IsTightLepton(1,
+			       std_vector_lepton_id,
+			       std_vector_lepton_isTightMuon,
+			       std_vector_electron_deltaEtaIn,
+			       std_vector_electron_sigmaIetaIeta,
+			       std_vector_electron_HoE,
+			       std_vector_electron_d0,
+			       std_vector_electron_dz,
+			       std_vector_electron_ooEooP,
+			       std_vector_electron_passConversion,
+			       std_vector_electron_scEta,
+			       std_vector_electron_deltaPhiIn
+			       ))  
+	       if(IsIsolatedLepton(1,
+				   std_vector_lepton_chargedHadronIso,
+				   std_vector_lepton_neutralHadronIso,
+				   std_vector_lepton_sumPUPt,
+				   std_vector_lepton_pt,
+				   std_vector_lepton_id,
+				   std_vector_lepton_eta,
+				   std_vector_lepton_photonIso,
+				   jetRho
+				   ))
 	 //if (std_vector_lepton_BestTrackdxy -> at(0) < 0.01 && std_vector_lepton_BestTrackdz -> at(0) < 0.1)
 	 //if (std_vector_lepton_BestTrackdxy -> at(1) < 0.01 && std_vector_lepton_BestTrackdz -> at(1) < 0.1)
 	 //if (prompt == 1)
@@ -413,7 +584,7 @@ void test::InsideLoop() {
 			    hWnBtaggedJets->Fill(nbjet, totalW);
 			    hWeffnBtaggedJets->Fill(nbjet, efficiencyW);
 			    
-			    /*if (bveto_mu) */{
+			    /*if (bveto_mu)*/ {
 
 			    for (Int_t jetNumber = 0; jetNumber < 3 ; ++jetNumber){
 			      if (jetbin >= 3) jetbin = 2;
@@ -449,6 +620,8 @@ void test::InsideLoop() {
 			  hWnJetsBveto                  ->Fill(njet,      totalW);
 			  hWeffnJetsBveto               ->Fill(njet, efficiencyW);
 			  hEffNoHt[3]                   ->Fill(1,    efficiencyW);
+			  hSigMuNoHt[3]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
+			  hSigElNoHt[3]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
 			  
 			  //bveto Ht 
 			  if(Ht < 250){
@@ -470,6 +643,8 @@ void test::InsideLoop() {
 			    hWnJetsBvetoAfterHt       ->Fill(njet,      totalW);
 			    hWeffnJetsBvetoAfterHt    ->Fill(njet, efficiencyW);					
 			    hEff[3]                   ->Fill(1,    efficiencyW);					
+			    hSigMu[3]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
+			    hSigEl[3]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
 			  }
 			  
 			  //bveto Ht 
@@ -490,6 +665,8 @@ void test::InsideLoop() {
 			    hDeltaPhiLeptonsWWLevelHtPlus[3]->Fill(dphill,    totalW);
 			    hDPhiPtllJetWWLevelHtPlus[3]    ->Fill(dphilljet, totalW);
 			    hEffHtPlus[3]                   ->Fill(1,    efficiencyW);					
+			    hSigMuHtPlus[3]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
+			    hSigElHtPlus[3]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
 			  }
 			  
 			  for (Int_t jetNumber = 0; jetNumber < 3 ; ++jetNumber){
@@ -512,6 +689,8 @@ void test::InsideLoop() {
 			      hDeltaPhiLeptonsWWLevelNoHt[jetNumber]->Fill(dphill,    totalW);
 			      hDPhiPtllJetWWLevelNoHt[jetNumber]    ->Fill(dphilljet, totalW);
 			      hEffNoHt[jetNumber]                   ->Fill(1,    efficiencyW);
+			      hSigMuNoHt[jetNumber]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
+			      hSigElNoHt[jetNumber]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
 			      
 			      //bveto Ht  
 			      if(Ht < 250){
@@ -530,7 +709,9 @@ void test::InsideLoop() {
 				hDeltaRLeptonsWWLevel[jetNumber]  ->Fill(drll,      totalW);
 				hDeltaPhiLeptonsWWLevel[jetNumber]->Fill(dphill,    totalW);
 				hDPhiPtllJetWWLevel[jetNumber]    ->Fill(dphilljet, totalW);
-				hEff[jetNumber]                 ->Fill(1,    efficiencyW);
+				hEff[jetNumber]                   ->Fill(1,    efficiencyW);
+				hSigMu[jetNumber]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
+				hSigEl[jetNumber]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
 			      }
 			      
 			      //bveto Ht  
@@ -551,6 +732,8 @@ void test::InsideLoop() {
 				hDeltaPhiLeptonsWWLevelHtPlus[jetNumber]->Fill(dphill,    totalW);
 				hDPhiPtllJetWWLevelHtPlus[jetNumber]    ->Fill(dphilljet, totalW);
 				hEffHtPlus[jetNumber]                   ->Fill(1,    efficiencyW);
+				hSigMuHtPlus[jetNumber]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
+				hSigElHtPlus[jetNumber]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
 			      }
 			    }  					
 			  }
@@ -660,6 +843,8 @@ void test::SetDataMembersAtTermination() {
   hDataEvents[qq]             = ((TH1F*) FindOutput("hDataEvents%.1i",qq));
   hBackgroundEvents[qq]       = ((TH1F*) FindOutput("hBackgroundEvents%.1i",qq));
   hEff[qq]                    = ((TH1F*) FindOutput("hEff%.1i",qq));
+  hSigEl[qq]                  = ((TH1F*) FindOutput("hSigEl%.1i",qq));
+  hSigMu[qq]                  = ((TH1F*) FindOutput("hSigMu%.1i",qq));
 
   hPtLepton1WWLevelNoHt[qq]       = ((TH1F*) FindOutput("hPtLepton1WWLevelNoHt%.1i",qq));
   hPtLepton2WWLevelNoHt[qq]       = ((TH1F*) FindOutput("hPtLepton2WWLevelNoHt%.1i",qq));
@@ -678,6 +863,8 @@ void test::SetDataMembersAtTermination() {
   hDataEventsNoHt[qq]             = ((TH1F*) FindOutput("hDataEventsNoHt%.1i",qq));
   hBackgroundEventsNoHt[qq]       = ((TH1F*) FindOutput("hBackgroundEventsNoHt%.1i",qq));
   hEffNoHt[qq]                    = ((TH1F*) FindOutput("hEffNoHt%.1i",qq));
+  hSigElNoHt[qq]                  = ((TH1F*) FindOutput("hSigElNoHt%.1i",qq));
+  hSigMuNoHt[qq]                  = ((TH1F*) FindOutput("hSigMuNoHt%.1i",qq));
 
   hPtLepton1WWLevelHtPlus[qq]       = ((TH1F*) FindOutput("hPtLepton1WWLevelHtPlus%.1i",qq));
   hPtLepton2WWLevelHtPlus[qq]       = ((TH1F*) FindOutput("hPtLepton2WWLevelHtPlus%.1i",qq));
@@ -696,6 +883,8 @@ void test::SetDataMembersAtTermination() {
   hDataEventsHtPlus[qq]             = ((TH1F*) FindOutput("hDataEventsHtPlus%.1i",qq));
   hBackgroundEventsHtPlus[qq]       = ((TH1F*) FindOutput("hBackgroundEventsHtPlus%.1i",qq));
   hEffHtPlus[qq]                    = ((TH1F*) FindOutput("hEffHtPlus%.1i",qq));
+  hSigElHtPlus[qq]                  = ((TH1F*) FindOutput("hSigElHtPlus%.1i",qq));
+  hSigMuHtPlus[qq]                  = ((TH1F*) FindOutput("hSigMuHtPlus%.1i",qq));
 
   hHt[qq]                     = ((TH1F*) FindOutput("hHt%.1i",qq));
   hHtAfter[qq]                = ((TH1F*) FindOutput("hHtAfter%.1i",qq));
