@@ -210,6 +210,11 @@ class test: public PAFAnalysis{
 
    PUWeight* fPUWeight;
  
+   float Testing(int k);
+   bool  IsTightLepton(int k);
+   float MuonIsolation(int k);
+   float ElectronIsolation(int k);
+   bool  IsIsolatedLepton(int k);
 
    bool G_Debug_DefineAnalysisVariables;
 
