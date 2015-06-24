@@ -22,7 +22,8 @@ void RunPROOF_test(double luminosity,
 		   TString  theSample,  
 		   Int_t JetChannel,
 		   TString FlavorChannel,
-		   TString proofMode_) 
+		   TString proofMode_,
+		   TString SameSign) 
 {
  
   // This loads all the PROOF Analysis Framework utilities
@@ -83,6 +84,10 @@ void RunPROOF_test(double luminosity,
     return;
   }
  
+  if (SameSign != "SS" && SameSign != "OS"){
+    cout<<"Please choose if you want to use same sign (SS) or opposite sign (OS) selections"<<endl;
+    return;
+  }
 
   ///////////////////////////////
   // TREE TYPE
@@ -135,7 +140,7 @@ void RunPROOF_test(double luminosity,
     }
 
     else if (theSample == "WW"){
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_WWTo2L2Nu.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/25ns/latino_WWTo2L2Nu.root");
     }
 
     else if (theSample == "VBF"){
@@ -147,7 +152,11 @@ void RunPROOF_test(double luminosity,
     }
 
     else if (theSample == "WJets"){
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_WJetsToLNu.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/25ns/latino_WJetsToLNu.root");
+    }
+
+    else if (theSample == "ZZ"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/25ns/latino_ZZ.root");
     }
 
     else if (theSample == "TTJets"){
@@ -214,6 +223,7 @@ gPAFOptions->inputParameters->SetNamedFloat("luminosityPU", 19468.3);
 gPAFOptions->inputParameters->SetNamedInt("WhichRun", whichRun);
 gPAFOptions->inputParameters->SetNamedString("theSample", theSample.Data());
 gPAFOptions->inputParameters->SetNamedString("FlavorChannel", FlavorChannel.Data());
+gPAFOptions->inputParameters->SetNamedString("SameSign", SameSign.Data());
 gPAFOptions->inputParameters->SetNamedInt("jetChannel", JetChannel);
 
 ////// I.G.

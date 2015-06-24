@@ -77,7 +77,11 @@ void macroNoElement(TString startFolder = "/gpfs/csic_projects/cms/piedra/latino
 		    TString arrivalFolder = "/gpfs/csic_projects/cms/trevisanin/newLatino/",
 		    Int_t copyAll = 0){
 
-  TFile *disposable = new TFile("disp.root","recreate");
+  gSystem -> Exec("mkdir " + arrivalFolder);
+
+  TFile *disposable = new TFile(arrivalFolder + "disp.root","recreate");
+  disposable->cd();
+  disposable->Close();
 
   TString command = "ls ";///gpfs/csic_projects/cms/piedra/latino/";
   command = command + startFolder;
@@ -115,6 +119,6 @@ void macroNoElement(TString startFolder = "/gpfs/csic_projects/cms/piedra/latino
     }
     else cout<<newLine<<" ya estaba!"<<endl;
   }
-  gSystem -> Exec("rm disp.root");
+  gSystem -> Exec("rm " + arrivalFolder + "disp.root");
 }
 

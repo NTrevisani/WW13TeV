@@ -13,16 +13,22 @@ TEST="test"
 
 NJETS=$1
 
-CHANNELS="OF"
+CHANNELS="All"
+
 #"All SF OF EE MuE EMu MuMu "
 
+PROOFMODE="Cluster"
+
+SAMESIGN="OS" 
 
 SAMPLES="
-QCD                \ 
-Top                \
-WJets              \
-TTJets             \
+ZZ                  \
+WW                  \
+WJets               \
 "
+#QCD                \ 
+#Top                \
+#TTJets             \
 #VBF                \
 #WW                 \
 
@@ -37,7 +43,7 @@ for CHANNEL in $CHANNELS; do
 	
 	mkdir rootFiles/AllJet/
 	mkdir rootFiles/AllJet/${CHANNEL}	
-	root -l -b -q "RunPROOF_test.C($LUMINOSITY,\"$TEST\",\"$SAMPLE\","$NJETS",\"$CHANNEL\")"
+	root -l -b -q "RunPROOF_test.C($LUMINOSITY,\"$TEST\",\"$SAMPLE\","$NJETS",\"$CHANNEL\",\"$PROOFMODE\",\"$SAMESIGN\")"
 	mv ${SAMPLE}.root rootFiles/AllJet/${CHANNEL}
   
     done
