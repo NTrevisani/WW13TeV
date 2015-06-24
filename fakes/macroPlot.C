@@ -19,12 +19,14 @@ void macroPlot(){
   Float_t jetEta;   t->SetBranchAddress("jetEta",&jetEta);
   Float_t distance; t->SetBranchAddress("distance",&distance);
 
-  TH2F *plot = new TH2F("plot","plot",100,0.,5.,100,0.,5.);
+  TH2F *plot  = new TH2F("plot" ,"plot" ,100 ,0.,5. ,100,0.,5.);
+  TH1F *hdist = new TH1F("hdist","hdist",100,0.,10);
 
   for(int iEntry = 0; iEntry < t -> GetEntries(); ++iEntry){
     t -> GetEntry(iEntry);
     if(iEntry % 100000 == 0) cout<<"Plotting Entry "<<iEntry<<endl;
-    if(distance < 0.12){ 
+    hdist->Fill(distance);
+    if(distance < 0.5){ 
       plot->Fill(leptonPt/jetPt,fabs(jetEta));
       ++contGood;
     }
@@ -46,7 +48,7 @@ void macroPlot(){
   tdrStyle->SetTitleFontSize(0.12);
   tdrStyle->SetTitleH(1); // Set the height of the title box
   tdrStyle->SetTitleW(1); // Set the width of the title box
- 
+
   plot->SetTitle("Fake Rate");
   plot->SetStats(0);
   plot->GetXaxis()->SetTitle("p_{T}^{lep} / p_{T}^{jet}");
@@ -56,4 +58,6 @@ void macroPlot(){
 
   plot->Draw("colz");
   c1->Print("FakeRatio13TeV.pdf","pdf");
+  hdist->Draw();
 }
+

@@ -1,3 +1,4 @@
+//root -l 'macroSSOS.C("hNjetsTwoLeptonsLevel","MuMu","WJets","pdf")'
 #include "TROOT.h"
 #include "TCanvas.h"
 #include "THStack.h"
@@ -23,9 +24,9 @@ int macroSSOS(TString plotName = "hWnJetsBvetoAfterHt",
 	      TString bkg = "WJets",
 	      TString format = "pdf"){
 
-TString folder   =   "../rootFiles/AllJet/" + channel + "/";
-TString folderSS = "../rootFilesSS/AllJet/" + channel + "/";
-
+  TString folder   =   "../rootFiles/AllJet/" + channel + "/";
+  TString folderSS = "../rootFilesSS/AllJet/" + channel + "/";
+  
   //Defining OS files
   TFile *QCDos    = new TFile(folder + "QCD.root","read");
   TFile *Topos    = new TFile(folder + "Top.root","read");
