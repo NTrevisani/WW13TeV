@@ -23,7 +23,8 @@ void RunPROOF_test(double luminosity,
 		   Int_t JetChannel,
 		   TString FlavorChannel,
 		   TString proofMode_,
-		   TString SameSign) 
+		   TString SameSign,
+		   TString MuonID) 
 {
  
   // This loads all the PROOF Analysis Framework utilities
@@ -143,6 +144,26 @@ void RunPROOF_test(double luminosity,
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/25ns/latino_WWTo2L2Nu.root");
     }
 
+    else if (theSample == "WW50"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/50ns/latino_WWTo2L2Nu.root");
+    }
+
+    else if (theSample == "WJets50"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/50ns/latino_WJetsToLNu.root");
+    }
+
+    else if (theSample == "WZ50"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/50ns/latino_WZ.root");
+    }
+
+    else if (theSample == "ZZ50"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/50ns/latino_ZZ.root");
+    }
+
+    else if (theSample == "TTbar50"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/50ns/latino_TTTo2L2Nu.root");
+    }
+
     else if (theSample == "VBF"){
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_VBF125.root");
     }
@@ -224,6 +245,7 @@ gPAFOptions->inputParameters->SetNamedInt("WhichRun", whichRun);
 gPAFOptions->inputParameters->SetNamedString("theSample", theSample.Data());
 gPAFOptions->inputParameters->SetNamedString("FlavorChannel", FlavorChannel.Data());
 gPAFOptions->inputParameters->SetNamedString("SameSign", SameSign.Data());
+gPAFOptions->inputParameters->SetNamedString("MuonID", MuonID.Data());
 gPAFOptions->inputParameters->SetNamedInt("jetChannel", JetChannel);
 
 ////// I.G.

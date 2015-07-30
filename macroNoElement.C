@@ -1,6 +1,6 @@
 //Clone the latino tree into a new one without the PAF-hated branches
 //run typing:  root -l 'macroNoElement.C("original folder","your folder", copy all files: 1 / copy only missing files: 0)'
-//e.g. root -l 'macroNoElement.C("/gpfs/csic_projects/cms/piedra/latino/","/gpfs/csic_projects/cms/trevisanin/newLatino/",0)'
+//e.g. root -l -b -q 'macroNoElement.C("/gpfs/csic_projects/cms/piedra/latino/","/gpfs/csic_projects/cms/trevisanin/newLatino/",0)'
 
 #include "TFile.h"
 #include "TH1.h"

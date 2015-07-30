@@ -51,7 +51,10 @@ class test: public PAFAnalysis{
    virtual void              SetDataMembersAtTermination();
    virtual void              Summary(); 
 
-   TH1F* h_n_PV; 
+  // VARIABLES FOR ALL EVENTS (to be initialized only once)
+
+  TTree *tree;
+  TH1F* h_n_PV; 
 
 
    // Counting histograms                                                                  //----------------------------------------------------------------------------       
@@ -107,32 +110,6 @@ class test: public PAFAnalysis{
    TH1F* hSigMu[4];
    TH1F* hSigEl[4];
 
-   TH1F* hPtLepton1WWLevelNoHt[4];
-   TH1F* hPtLepton2WWLevelNoHt[4];
-   TH1F* hPtDiLeptonWWLevelNoHt[4];
-   TH1F* hMinvWWLevelNoHt[4];
-   TH1F* hMtWWLevelNoHt[4];
-   TH1F* hpfMetWWLevelNoHt[4];
-   TH1F* hpminMetWWLevelNoHt[4];
-   TH1F* hDeltaRLeptonsWWLevelNoHt[4];
-   TH1F* hDeltaPhiLeptonsWWLevelNoHt[4];
-   TH1F* hDPhiPtllJetWWLevelNoHt[4];
-   TH1F* hSigMuNoHt[4];
-   TH1F* hSigElNoHt[4];
-
-   TH1F* hPtLepton1WWLevelHtPlus[4];
-   TH1F* hPtLepton2WWLevelHtPlus[4];
-   TH1F* hPtDiLeptonWWLevelHtPlus[4];
-   TH1F* hMinvWWLevelHtPlus[4];
-   TH1F* hMtWWLevelHtPlus[4];
-   TH1F* hpfMetWWLevelHtPlus[4];
-   TH1F* hpminMetWWLevelHtPlus[4];
-   TH1F* hDeltaRLeptonsWWLevelHtPlus[4];
-   TH1F* hDeltaPhiLeptonsWWLevelHtPlus[4];
-   TH1F* hDPhiPtllJetWWLevelHtPlus[4];
-   TH1F* hSigMuHtPlus[4];
-   TH1F* hSigElHtPlus[4];
-
    TH1F* hHt[4];
    TH1F* hHtAfter[4];
 
@@ -149,16 +126,24 @@ class test: public PAFAnalysis{
    TH1F* hDeltaRLeptonsTwoLeptonsLevel;
    TH1F* hDeltaPhiLeptonsTwoLeptonsLevel;
    TH1F* hDPhiPtllJetTwoLeptonsLevel;
+   TH1F* hNjetsPlot1TwoLeptonsLevel;
+   TH1F* hNjetsPlot2TwoLeptonsLevel;
+   TH1F* hSigMuNoHtTwoLeptonsLevel;
+   TH1F* hSigElNoHtTwoLeptonsLevel;
+   TH1F* hDxyTwoLeptonsLevel;
+   TH1F* hDzTwoLeptonsLevel;  
+   
+   TH1F *hLooseIso;
 
  public:
  
-   // My Declarations:
+   // My Declarations:OA
    // Define global variables
 
    PUWeight* fPUWeight;
  
    float Testing(int k);
-   bool  IsTightLepton(int k);
+   bool  IsTightLepton(int k, TString _MuonID_);
    float MuonIsolation(int k);
    float ElectronIsolation(int k);
    bool  IsIsolatedLepton(int k);
@@ -168,16 +153,18 @@ class test: public PAFAnalysis{
  
    //* Histograms 
   
-// * Input parameters
-TString Signal; // Type of Signal
-int NEvents; // Total number of events in the sample before skim
-double Luminosity; // Total luminosity
-double XSection; // Process cross section
-bool IsDATA; // True if is Data, False in case MC
-int WhichRun; // 1 in case of RunI samples. 2 In case of RunII samples.;
- TString TheSample; //path to the input files
- TString flavorChannel; //selected decay channel 
- int jetChannel; //number of jets in the event
+   // * Input parameters
+   TString Signal; // Type of Signal
+   int NEvents; // Total number of events in the sample before skim
+   double Luminosity; // Total luminosity
+   double XSection; // Process cross section
+   bool IsDATA; // True if is Data, False in case MC
+   int WhichRun; // 1 in case of RunI samples. 2 In case of RunII samples.;
+   TString TheSample; //path to the input files
+   TString flavorChannel; //selected decay channel 
+   int jetChannel; //number of jets in the event
+   TString _MuonID; //medium, tight...
+
    ClassDef(test,0);
 };
 #endif
