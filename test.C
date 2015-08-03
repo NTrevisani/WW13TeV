@@ -157,18 +157,18 @@ void test::Initialise() {
   
   for (Int_t nC=0; nC<4; nC++) {
 
-    hPtLepton1WWLevel[nC]       = CreateH1F(Form("hPtLepton1WWLevel%.1i", nC),        "", 200, 0, 200);
-    hPtLepton2WWLevel[nC]       = CreateH1F(Form("hPtLepton2WWLevel%.1i", nC),        "", 200, 0, 200);
-    hPtDiLeptonWWLevel[nC]      = CreateH1F(Form("hPtDiLeptonWWLevel%.1i", nC),       "", 200, 0, 200);
-    hMinvWWLevel[nC]            = CreateH1F(Form("hMinvWWLevel%.1i", nC),             "", 200, 0, 200);
-    hMtWWLevel[nC]              = CreateH1F(Form("hMtWWLevel%.1i", nC),               "", 250, 0, 250);
-    hpfMetWWLevel[nC]           = CreateH1F(Form("hpfMetWWLevel%.1i", nC),            "", 150, 0, 150);
-    hpminMetWWLevel[nC]         = CreateH1F(Form("hpminMetWWLevel%.1i", nC),          "", 150, 0, 150);
+    hPtLepton1WWLevel[nC]       = CreateH1F(Form("hPtLepton1WWLevel%.1i", nC),        "", 1000,0.,1000);
+    hPtLepton2WWLevel[nC]       = CreateH1F(Form("hPtLepton2WWLevel%.1i", nC),        "", 1000,0.,1000);
+    hPtDiLeptonWWLevel[nC]      = CreateH1F(Form("hPtDiLeptonWWLevel%.1i", nC),       "", 1000,0.,1000);
+    hMinvWWLevel[nC]            = CreateH1F(Form("hMinvWWLevel%.1i", nC),             "", 1000,0.,1000);
+    hMtWWLevel[nC]              = CreateH1F(Form("hMtWWLevel%.1i", nC),               "", 1000,0.,1000);
+    hpfMetWWLevel[nC]           = CreateH1F(Form("hpfMetWWLevel%.1i", nC),            "", 1000,0.,1000);
+    hpminMetWWLevel[nC]         = CreateH1F(Form("hpminMetWWLevel%.1i", nC),          "", 1000,0.,1000);
     hDeltaRLeptonsWWLevel[nC]   = CreateH1F(Form("hDeltaRLeptonsWWLevel%.1i", nC),    "",  50, 0,   5);
     hDeltaPhiLeptonsWWLevel[nC] = CreateH1F(Form("hDeltaPhiLeptonsWWLevel%.1i", nC),  "",  32, 0, 3.2);
     hDPhiPtllJetWWLevel[nC]     = CreateH1F(Form("hDPhiPtllJetWWLevel%.1i", nC),      "",  32, 0, 3.2);
-    hSigEl[nC]                  = CreateH1F(Form("hSigEl%.1i", nC),                   "", 1000,0.,500);
-    hSigMu[nC]                  = CreateH1F(Form("hSigMu%.1i", nC),                   "", 1000,0.,500);
+    hSigEl[nC]                  = CreateH1F(Form("hSigEl%.1i", nC),                   "", 1000,0.,1000);
+    hSigMu[nC]                  = CreateH1F(Form("hSigMu%.1i", nC),                   "", 1000,0.,1000);
 
     hHt[nC]                     = CreateH1F(Form("hHt%.1i",               nC),       "", 3000, 0, 3000);
     hHtAfter[nC]                = CreateH1F(Form("hHtAfter%.1i",          nC),       "", 3000, 0, 3000);
@@ -178,13 +178,13 @@ void test::Initialise() {
   // TwoLeptons level histograms   
   //----------------------------------------------------------------------------
   
-  hPtLepton1TwoLeptonsLevel       = CreateH1F("hPtLepton1TwoLeptonsLevel",       "", 200, 0, 200);
-  hPtLepton2TwoLeptonsLevel       = CreateH1F("hPtLepton2TwoLeptonsLevel",       "", 200, 0, 200);
-  hPtDiLeptonTwoLeptonsLevel      = CreateH1F("hPtDiLeptonTwoLeptonsLevel",      "", 200, 0, 200);
-  hMinvTwoLeptonsLevel            = CreateH1F("hMinvTwoLeptonsLevel",            "", 200, 0, 200);
-  hMtTwoLeptonsLevel              = CreateH1F("hMtTwoLeptonsLevel",              "", 250, 0, 250);
-  hpfMetTwoLeptonsLevel           = CreateH1F("hpfMetTwoLeptonsLevel",           "", 150, 0, 150);
-  hpminMetTwoLeptonsLevel         = CreateH1F("hpminMetTwoLeptonsLevel",         "", 150, 0, 150);
+  hPtLepton1TwoLeptonsLevel       = CreateH1F("hPtLepton1TwoLeptonsLevel",       "", 1000,0.,1000);
+  hPtLepton2TwoLeptonsLevel       = CreateH1F("hPtLepton2TwoLeptonsLevel",       "", 1000,0.,1000);
+  hPtDiLeptonTwoLeptonsLevel      = CreateH1F("hPtDiLeptonTwoLeptonsLevel",      "", 1000,0.,1000);
+  hMinvTwoLeptonsLevel            = CreateH1F("hMinvTwoLeptonsLevel",            "", 1000,0.,1000);
+  hMtTwoLeptonsLevel              = CreateH1F("hMtTwoLeptonsLevel",              "", 1000,0.,1000);
+  hpfMetTwoLeptonsLevel           = CreateH1F("hpfMetTwoLeptonsLevel",           "", 1000,0.,1000);
+  hpminMetTwoLeptonsLevel         = CreateH1F("hpminMetTwoLeptonsLevel",         "", 1000,0.,1000);
   hDeltaRLeptonsTwoLeptonsLevel   = CreateH1F("hDeltaRLeptonsTwoLeptonsLevel",   "",  50, 0,   5);
   hDeltaPhiLeptonsTwoLeptonsLevel = CreateH1F("hDeltaPhiLeptonsTwoLeptonsLevel", "",  32, 0, 3.2);
   hDPhiPtllJetTwoLeptonsLevel     = CreateH1F("hDPhiPtllJetTwoLeptonsLevel",     "",  32, 0, 3.2);
@@ -216,6 +216,9 @@ void test::InsideLoop() {
   efficiencyW = puW * effW * triggW ;
   //totalW      = (1 + 0.5 * (dataset >= 82 && dataset <= 84)) * baseW * efficiencyW * Luminosity;
   totalW = baseW * Luminosity;
+
+  if (TheSample.Contains("Data"))
+    totalW = 1.0;
 
   h_n_PV -> Fill(1,efficiencyW);  
   
@@ -301,20 +304,21 @@ void test::InsideLoop() {
 
 // The selection begins here
    //--------------------------------------------------------------------------
-   if (std_vector_lepton_pt->at(0) > 20)
-     if (std_vector_lepton_pt->at(1) > 10) 
-       if ((sameSign == "SS" && ch1*ch2 > 0) || (sameSign == "OS" && ch1*ch2 < 0))
-	 if ( (SelectedChannel == -1)                                   || 
-	      (channel == SelectedChannel)                          || 
-	      (SelectedChannel == 4 && (channel == 2 || channel == 3) ) || 
-	      (SelectedChannel == 5 && (channel == 0 || channel == 1) ) 
-	      ){
-	   /*
-	   if (IsTightLepton(0,_MuonID) && !IsTightLepton(1,_MuonID))
-	     hLooseIso -> Fill(ElectronIsolation(1), totalW);
-	   if (IsTightLepton(1,_MuonID) && !IsTightLepton(0,_MuonID))
-	     hLooseIso -> Fill(ElectronIsolation(0), totalW);
-	   */
+   if (trigger == 1)
+     if (std_vector_lepton_pt->at(0) > 20)
+       if (std_vector_lepton_pt->at(1) > 20) 
+	 if ((sameSign == "SS" && ch1*ch2 > 0) || (sameSign == "OS" && ch1*ch2 < 0))
+	   if ( (SelectedChannel == -1)                                   || 
+		(channel == SelectedChannel)                              || 
+		(SelectedChannel == 4 && (channel == 2 || channel == 3) ) || 
+		(SelectedChannel == 5 && (channel == 0 || channel == 1) ) 
+		){
+	     /*
+	       if (IsTightLepton(0,_MuonID) && !IsTightLepton(1,_MuonID))
+	       hLooseIso -> Fill(ElectronIsolation(1), totalW);
+	       if (IsTightLepton(1,_MuonID) && !IsTightLepton(0,_MuonID))
+	       hLooseIso -> Fill(ElectronIsolation(0), totalW);
+	     */
 	   
 	   hDxyTwoLeptonsLevel ->Fill(std_vector_lepton_BestTrackdxy->at(0),totalW);	       
 	   hDzTwoLeptonsLevel  ->Fill(std_vector_lepton_BestTrackdz ->at(0),totalW);	       
@@ -323,7 +327,6 @@ void test::InsideLoop() {
 	     if (IsIsolatedLepton(1))
 	       if (IsTightLepton(0,_MuonID))
 		 if (IsTightLepton(1,_MuonID)){
-		   
 		   
 		   //		   tree->Fill();
 		   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -366,10 +369,11 @@ void test::InsideLoop() {
 			 hWLowMinv->Fill(1, totalW);
 			 hWeffLowMinv->Fill(1, efficiencyW);
 			 
-			 //zveto (in case of same flavour)
-			 if ( fabs(ZMASS - mll) > 15 || 
-			      channel == 0           ||
-			      channel == 1           ){
+			 //zveto (in case of same flavour)                                                                                         
+			 if ( (fabs(ZMASS - mll) > 15 &&
+			       ( metvar > 45 ) )      ||
+			      channel == 2            ||
+			      channel == 3            ){
 			   
 			   hWZVeto->Fill(1, totalW);
 			   hWeffZVeto->Fill(1, efficiencyW);
@@ -647,7 +651,11 @@ bool test::IsTightLepton(int k, TString _MuonID_)
   // Electron cut based medium ID
   else if (fabs(std_vector_lepton_id->at(k)) == 11)
     {
-	float aeta = fabs(std_vector_electron_scEta->at(k));
+      is_tight_lepton = std_vector_lepton_eleIdMedium->at(k);
+    }
+      /*
+      float aeta = fabs(std_vector_electron_scEta->at(k));
+	
 	
 	if (aeta <= 1.479)
 	  {
@@ -680,6 +688,7 @@ bool test::IsTightLepton(int k, TString _MuonID_)
 	      }
 	  }
     }
+	*/
 
   return is_tight_lepton;
 

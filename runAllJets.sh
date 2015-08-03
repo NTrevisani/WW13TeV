@@ -7,25 +7,42 @@ if [ $# -lt 1 ]; then
 fi
 
 
-LUMINOSITY=19.365
+LUMINOSITY=0.04003
 
 TEST="test"
 
 NJETS=$1
 
-CHANNELS="All"
+CHANNELS="SF"
+#"MuMu OF EE All SF OF EE MuE EMu MuMu"
 
-#"All SF OF EE MuE EMu MuMu "
+PROOFMODE="kCluster"
 
-PROOFMODE="Cluster"
+MUONIDS="MediumIDTighterIP"
+# TightID TightIDTighterIP MediumIDTighterIP"
 
 SAMESIGN="OS" 
 
 SAMPLES="
-ZZ                  \
-WW                  \
-WJets               \
+Data2015             \
+WW50                 \
+WJets50              \
+WZ50                 \
+ZZ50                 \
+TTJets50             \
+DY50                 \
+VV50                 \
 "
+#TTbar50              \
+#WW50                 \
+#WJets50              \
+#"
+#WZ50                \
+#ZZ50                \
+#ZZ                  \
+#WW                  \
+#WJets               \
+
 #QCD                \ 
 #Top                \
 #TTJets             \
@@ -41,13 +58,17 @@ for CHANNEL in $CHANNELS; do
 
     for SAMPLE in $SAMPLES; do 
 	
-	mkdir rootFiles/AllJet/
-	mkdir rootFiles/AllJet/${CHANNEL}	
-	root -l -b -q "RunPROOF_test.C($LUMINOSITY,\"$TEST\",\"$SAMPLE\","$NJETS",\"$CHANNEL\",\"$PROOFMODE\",\"$SAMESIGN\")"
-	mv ${SAMPLE}.root rootFiles/AllJet/${CHANNEL}
-  
+	for MUONID in $MUONIDS; do 
+	
+	    mkdir rootFiles/
+	    mkdir rootFiles/${CHANNEL}	
+	    mkdir rootFiles/${CHANNEL}/${MUONID}	
+	    root -l -b -q "RunPROOF_test.C($LUMINOSITY,\"$TEST\",\"$SAMPLE\","$NJETS",\"$CHANNEL\",\"$PROOFMODE\",\"$SAMESIGN\",\"$MUONID\")"
+	    mv ${SAMPLE}.root rootFiles/${CHANNEL}/${MUONID}
+	    
+	done
+	
     done
 
 done
-
 
