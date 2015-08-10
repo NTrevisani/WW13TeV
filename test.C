@@ -302,7 +302,14 @@ void test::InsideLoop() {
    if (pfType1Met > 0 && trkMet > 0)
      ratioMet = pfType1Met / sqrt(pfType1Met + trkMet);
 
-// The selection begins here
+   //Building b-veto csvv2ivf (false: no b-jet -> good!! true: b-jet detected -> reject event!!)
+   bool bvetocsvv2ivf = false;
+
+   for (int i = 0; i < njet; ++i)
+     if (std_vector_jet_csvv2ivf->at(i) > 0.814)
+       bvetocsvv2ivf = true;
+
+   // The selection begins here
    //--------------------------------------------------------------------------
    if (trigger == 1)
      if (std_vector_lepton_pt->at(0) > 20)
@@ -409,61 +416,58 @@ void test::InsideLoop() {
 				 }
 				 
 				 //b-veto
-				 if (bveto_ip == 1 && nbjettche == 0) {
+				 //if (bveto_ip == 1 && nbjettche == 0) {
+				 if (!bvetocsvv2ivf){
 				   
 				   hWTopTagging->Fill(1, totalW);
 				   hWeffTopTagging->Fill(1, efficiencyW);
 				   hHt[2]->Fill(Ht,totalW);			       
 				   
-				   //b-veto (now not operative)
-				   /*if (bveto_mu == 1)*/ {
+				   hWSoftMuVeto->Fill(1, totalW);
+				   hWeffSoftMuVeto->Fill(1,efficiencyW);
+				   
+				   hHtAfter[3]->Fill(Ht,totalW);				    
+				   
+				   //bveto Ht 
+				   if(Ht < 250){
 				     
-				     hWSoftMuVeto->Fill(1, totalW);
-				     hWeffSoftMuVeto->Fill(1,efficiencyW);
-				     
-				     hHtAfter[3]->Fill(Ht,totalW);				    
-				     
-				     //bveto Ht 
-				     if(Ht < 250){
-				       
-				       hPtLepton1WWLevel[3]      ->Fill(pt1,       totalW);
-				       hPtLepton2WWLevel[3]      ->Fill(pt2,       totalW);
-				       hPtDiLeptonWWLevel[3]     ->Fill(ptll,      totalW);
-				       hMinvWWLevel[3]           ->Fill(mll,       totalW);
-				       hMtWWLevel[3]             ->Fill(mth,       totalW);
-				       hpfMetWWLevel[3]          ->Fill(pfType1Met,totalW);
-				       hpminMetWWLevel[3]        ->Fill(mpmet,     totalW);
-				       hDeltaRLeptonsWWLevel[3]  ->Fill(drll,      totalW);
-				       hDeltaPhiLeptonsWWLevel[3]->Fill(dphill,    totalW);
-				       hDPhiPtllJetWWLevel[3]    ->Fill(dphilljet, totalW);
-				       hWeffnJetsBvetoAfterHt    ->Fill(njet, efficiencyW);					
-				       hSigMu[3]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
-				       hSigEl[3]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
-				     }
-				     
-				     for (Int_t jetNumber = 0; jetNumber < 3 ; ++jetNumber){
-				       if (jetbin >= 3) jetbin = 2;
-				       if(jetNumber == jetbin){
-					 
-					 //bveto Ht  
-					 if(Ht < 250){
-					   
-					   hPtLepton1WWLevel[jetNumber]      ->Fill(pt1,       totalW);
-					   hPtLepton2WWLevel[jetNumber]      ->Fill(pt2,       totalW);
-					   hPtDiLeptonWWLevel[jetNumber]     ->Fill(ptll,      totalW);
-					   hMinvWWLevel[jetNumber]           ->Fill(mll,       totalW);
-					   hMtWWLevel[jetNumber]             ->Fill(mth,       totalW);
-					   hpfMetWWLevel[jetNumber]          ->Fill(pfType1Met,totalW);
-					   hpminMetWWLevel[jetNumber]        ->Fill(mpmet,     totalW);
-					   hDeltaRLeptonsWWLevel[jetNumber]  ->Fill(drll,      totalW);
-					   hDeltaPhiLeptonsWWLevel[jetNumber]->Fill(dphill,    totalW);
-					   hDPhiPtllJetWWLevel[jetNumber]    ->Fill(dphilljet, totalW);
-					   hSigMu[jetNumber]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
-					   hSigEl[jetNumber]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
-					 }
-				       }
-				     }  					
+				     hPtLepton1WWLevel[3]      ->Fill(pt1,       totalW);
+				     hPtLepton2WWLevel[3]      ->Fill(pt2,       totalW);
+				     hPtDiLeptonWWLevel[3]     ->Fill(ptll,      totalW);
+				     hMinvWWLevel[3]           ->Fill(mll,       totalW);
+				     hMtWWLevel[3]             ->Fill(mth,       totalW);
+				     hpfMetWWLevel[3]          ->Fill(pfType1Met,totalW);
+				     hpminMetWWLevel[3]        ->Fill(mpmet,     totalW);
+				     hDeltaRLeptonsWWLevel[3]  ->Fill(drll,      totalW);
+				     hDeltaPhiLeptonsWWLevel[3]->Fill(dphill,    totalW);
+				     hDPhiPtllJetWWLevel[3]    ->Fill(dphilljet, totalW);
+				     hWeffnJetsBvetoAfterHt    ->Fill(njet, efficiencyW);					
+				     hSigMu[3]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
+				     hSigEl[3]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
 				   }
+				     
+				   for (Int_t jetNumber = 0; jetNumber < 3 ; ++jetNumber){
+				     if (jetbin >= 3) jetbin = 2;
+				     if(jetNumber == jetbin){
+				       
+				       //bveto Ht  
+				       if(Ht < 250){
+					 
+					 hPtLepton1WWLevel[jetNumber]      ->Fill(pt1,       totalW);
+					 hPtLepton2WWLevel[jetNumber]      ->Fill(pt2,       totalW);
+					 hPtDiLeptonWWLevel[jetNumber]     ->Fill(ptll,      totalW);
+					 hMinvWWLevel[jetNumber]           ->Fill(mll,       totalW);
+					 hMtWWLevel[jetNumber]             ->Fill(mth,       totalW);
+					 hpfMetWWLevel[jetNumber]          ->Fill(pfType1Met,totalW);
+					 hpminMetWWLevel[jetNumber]        ->Fill(mpmet,     totalW);
+					 hDeltaRLeptonsWWLevel[jetNumber]  ->Fill(drll,      totalW);
+					 hDeltaPhiLeptonsWWLevel[jetNumber]->Fill(dphill,    totalW);
+					 hDPhiPtllJetWWLevel[jetNumber]    ->Fill(dphilljet, totalW);
+					 hSigMu[jetNumber]                 ->Fill(std_vector_lepton_muSIP3D->at(0),totalW);
+					 hSigEl[jetNumber]                 ->Fill(std_vector_lepton_elSIP3D->at(0),totalW);
+				       }
+				     }
+				   }  					
 				 }
 			       }
 			     }
@@ -473,7 +477,8 @@ void test::InsideLoop() {
 		     }
 		   }
 		 }
-	 }
+	   }
+   
    
    // Define Normalization Factor for MC samples 
    //------------------------------------------------------------------------------

@@ -13,7 +13,7 @@ TEST="test"
 
 NJETS=$1
 
-CHANNELS="SF"
+CHANNELS="OF"
 #"MuMu OF EE All SF OF EE MuE EMu MuMu"
 
 PROOFMODE="kCluster"

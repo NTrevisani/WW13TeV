@@ -13,7 +13,7 @@ TEST="test"
 
 NJETS=$1
 
-CHANNELS="All"
+CHANNELS="OF"
 
 #"All SF OF EE MuE EMu MuMu "
 

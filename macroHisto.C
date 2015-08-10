@@ -19,7 +19,10 @@
 
 const int nProcesses = 7;
 
+int iData;
+
 enum {iWW, iWZ, iZZ, iTTJets, iDY, iWJets, iData};
+//enum {iWW, iTTbar, iWJets};
 
 TFile *input[nProcesses];
 TH1F  *histo[nProcesses];
@@ -32,10 +35,10 @@ process[iWW]     = "WW50";
 process[iWZ]     = "WZ50";
 process[iZZ]     = "ZZ50";
 process[iTTJets] = "TTJets50";
-//process[iTT]     = "TTbar50";
 process[iDY]     = "DY50";
 process[iWJets]  = "WJets50";
 process[iData]   = "Data2015";
+//process[iTTbar]  = "TTbar50";
 
 Color_t color[nProcesses];
 
@@ -45,7 +48,7 @@ color[iZZ]     = kAzure - 2;
 color[iWJets]  = kGray + 1;
 color[iTTJets] = kYellow;
 color[iDY]     = kGreen + 2;
-//color[iTT]     = kYellow;
+//color[iTTbar]   = kYellow;
 color[iData]   = kBlack;
 
 TGraphErrors *errors  = new TGraphErrors();
@@ -80,15 +83,7 @@ void drawPlots(TString variable,
     }
 
     histo[ip]  = (TH1F*) input[ip] -> Get(variable);
-    /*
-    TCanvas *prova = new TCanvas();
-    prova->cd();
-    histo[0]->Draw();
-    prova->Print("prova.pdf","pdf");
-    */
     histo[ip] -> Rebin(nrebin);
-    histo[ip] -> GetXaxis() -> SetRangeUser(left,right);
-    //histo[ip] -> GetXaxis() -> SetLimits(left,right);
 
     //histograms normalization
     if (norm == "normon")
@@ -98,7 +93,20 @@ void drawPlots(TString variable,
     if( histo[ip] -> GetMaximum() > rangeY )
       rangeY = histo[ip] -> GetMaximum();
   }
+
+  //statistical errors
+  for (int i = 0; i < nProcesses - 1; ++i){
+    float errorWeight = histo[i] -> Integral() / histo[i] -> GetEntries(); 
+    for (int j = 0; j < histo[i] -> GetNbinsX(); ++j)
+      histo[i] -> SetBinError(j, sqrt(histo[i] -> GetBinContent(j) * errorWeight));
+  }
+  if (DataMode == "nodata"){
+    float errorWeight = histo[nProcesses - 1] -> GetEntries() / histo[nProcesses - 1] -> Integral();
+    for (int j = 0; j < histo[nProcesses - 1] -> GetNbinsX(); ++j)
+      histo[nProcesses - 1] -> SetBinError(j, sqrt(histo[nProcesses - 1] -> GetBinContent(j) * errorWeight));
+  }
   
+  //Main Canvas
   TCanvas *c1 = new TCanvas("variable","variable",600,800);
   c1->cd();
   
@@ -112,6 +120,7 @@ void drawPlots(TString variable,
 
   Float_t rangeMin = 0.0001;
 
+  //Log Draw Options
   if (drawLog == "logon"){
     histo[0] -> GetYaxis() -> SetRangeUser(rangeMin, rangeY / rangeMin);
     pad1->SetLogy();
@@ -120,6 +129,7 @@ void drawPlots(TString variable,
     histo[0] -> GetYaxis() -> SetRangeUser(0.,2.*rangeY);
   }
 
+  //Labels
   if(units != "[]")
     histo[0]->GetXaxis()->SetTitle(units);
   histo[0]->GetXaxis()->SetTitleSize(0.07);
@@ -136,12 +146,15 @@ void drawPlots(TString variable,
   Float_t maxYaxis = 0.;
 
   histo[0] -> Draw();
-  for (int ip = 0; ip < nProcesses; ++ip){
-    //if (ip!=iData) histo[ip]->Scale(40.03/5000); //scale to the right Lumi
-    if (ip!=iData) histo[ip]->SetLineWidth(3);
+
+  //Legend
+  for (int ip = nProcesses - 1; ip >= 0; --ip){
+    if (DataMode == "dataon" && ip!=iData) histo[ip]->SetLineWidth(3);
     histo[ip]->SetStats(0);
     histo[ip]->SetLineColor(color[ip]);
-    leg->AddEntry(histo[nProcesses - 1 - ip],process[nProcesses - 1 - ip],"f");
+    if (DataMode == "dataon" && ip==iData) 
+      leg->AddEntry(histo[iData],process[iData],"lep");
+    else leg->AddEntry(histo[ip],process[ip],"f");      
     histo[ip] -> Draw("same");
     maxYaxis += histo[ip] -> GetMaximum();
   }
@@ -159,7 +172,11 @@ void drawPlots(TString variable,
     histo[ip]    -> SetFillColor(color[ip]);
     histo[ip]    -> SetFillStyle(1001);
   }
-
+  if (DataMode != "dataon"){
+    histo[nProcesses-1]    -> SetFillColor(color[nProcesses-1]);
+    histo[nProcesses-1]    -> SetFillStyle(1001);
+  }
+    
   TString title  = variable;
   TString njets  = "Inclusive";
 
@@ -181,32 +198,39 @@ void drawPlots(TString variable,
   //use this histogram for stack Y axis range
   TH1F haxis("haxis","haxis",histo[0]->GetNbinsX(),0.,histo[0]->GetNbinsX()*histo[0]->GetBinWidth(0));
   for(int i = 0; i < nProcesses-1; ++i){
-  haxis.Add(histo[i]);
+    haxis.Add(histo[i]);
   }
-
-  cout<<haxis.GetNbinsX() * haxis.GetBinWidth(0)<<endl;
-  haxis.GetXaxis()->SetLimits(left,right);
+  if(DataMode != "dataon")
+    haxis.Add(histo[nProcesses-1]);
   
   //TH1F *errors = new TH1F("errors","",haxis.GetNbinsX(),0.,histo[0]->GetNbinsX() * histo[0]->GetBinWidth(0));
   //TH1F *erRatio = new TH1F("erRatio","",haxis.GetNbinsX(),0.,histo[0]->GetNbinsX() * histo[0]->GetBinWidth(0));
 
-  Float_t large = histo[0]->GetBinWidth(0) / 2;
   //building error graphs
-  for(int e = 0; e < haxis.GetNbinsX(); ++e){//e < errors -> GetNbinsX(); ++e){
-      errors->SetPoint(e,histo[0]->GetXaxis()->GetBinCenter(e), haxis.GetBinContent(e));//SetBinContent(e, haxis.GetBinContent(e));
-      errors->SetPointError(e, large, haxis.GetBinError(e));//haxis.GetBinError(e));
-      erRatio->SetPoint(e, histo[0]->GetXaxis()->GetBinCenter(e), 1);//1);
-      if (haxis.GetBinContent(e) != 0) 
-	erRatio->SetPointError(e, large, haxis.GetBinError(e) / haxis.GetBinContent(e));//haxis.GetBinError(e) / haxis.GetBinContent(e));
-      else erRatio->SetPointError(e, large, 0.);
+  Float_t large = histo[0]->GetBinWidth(0) / 2;
+  for(int e = 0; e < haxis.GetNbinsX(); ++e){
+    errors->SetPoint(e,haxis.GetXaxis()->GetBinCenter(e), haxis.GetBinContent(e));
+    errors->SetPointError(e, large, haxis.GetBinError(e));
+    erRatio->SetPoint(e, haxis.GetXaxis()->GetBinCenter(e), 1);
+    if (haxis.GetBinContent(e) != 0) 
+      erRatio->SetPointError(e, large, haxis.GetBinError(e) / haxis.GetBinContent(e));//haxis.GetBinError(e) / haxis.GetBinContent(e));
+    else erRatio->SetPointError(e, large, 0.);
+    if(variable == "hDeltaPhiLeptonsWWLevel0"){
+      cout<<haxis.GetBinContent(e)<<"   "<<histo[0]->GetBinContent(e) + histo[1]->GetBinContent(e) + histo[2]->GetBinContent(e)<<endl;
+      cout<<histo[0]->GetBinContent(e)<<"   "<<histo[1]->GetBinContent(e)<<"   "<<histo[2]->GetBinContent(e)<<endl;
+      cout<<haxis.GetBinCenter(e)<<"   "<<histo[0]->GetBinCenter(e)<<endl;
+      cout<<""<<endl;
+    }
     }
   float maxYaxisStack = 0.;
   Int_t maxBin = haxis.GetMaximumBin();
   maxYaxisStack = haxis.GetBinContent(maxBin) + errors -> GetErrorY(maxBin) / 2;
   
-  Int_t maxBinData = histo[iData]->GetMaximumBin();
-  if(histo[iData]->GetBinContent(maxBinData) + errors -> GetErrorY(maxBinData) / 2 > maxYaxisStack)
-    maxYaxisStack = histo[iData]->GetBinContent(maxBinData) + errors -> GetErrorY(maxBinData) / 2;
+  if(DataMode == "dataon"){
+    Int_t maxBinData = histo[iData]->GetMaximumBin();
+    if(histo[iData]->GetBinContent(maxBinData) + errors -> GetErrorY(maxBinData) / 2 > maxYaxisStack)
+      maxYaxisStack = histo[iData]->GetBinContent(maxBinData) + errors -> GetErrorY(maxBinData) / 2;
+  }
 
   errors -> SetMarkerStyle(8);
   errors -> SetFillStyle(3005);	
@@ -228,9 +252,11 @@ void drawPlots(TString variable,
   }
 
   //actually building the stack
-  for (int w = 0; w < nProcesses-1; ++w){
+  for (int w = 0; w < nProcesses-1; ++w)
     hstack -> Add(histo[w]);      
-  }
+  
+  if (DataMode != "dataon")
+    hstack -> Add(histo[nProcesses-1]);      
 
   TCanvas *c2 = new TCanvas("stack","stack",600,800);
   c2->cd();
@@ -262,25 +288,30 @@ void drawPlots(TString variable,
   hstack -> GetXaxis() -> SetTitleSize(0.07);
   hstack -> GetXaxis() -> SetTitleOffset(0.9);
   hstack -> GetXaxis() -> SetLabelSize(0.045);
-  hstack -> GetXaxis() -> SetLabelOffset(0.045);
+  hstack -> GetXaxis() -> SetLabelOffset(0.03);
+  if (DataMode == "dataon")
+    hstack -> GetXaxis() -> SetLabelOffset(0.045);
   hstack -> GetYaxis() -> SetTitleSize(0.05);
   hstack -> GetYaxis() -> SetLabelSize(0.045);  
   hstack -> GetXaxis() -> SetTitle(units);
   hstack -> GetXaxis() -> SetNdivisions(408);
   hstack -> GetYaxis() -> SetNdivisions(408);
 
-  histo[iData]->SetMarkerStyle(8);//kFullCircle);
-
-  histo[iData] -> Draw("ep");
+  if (DataMode == "dataon"){
+    histo[iData]->SetMarkerStyle(8);//kFullCircle);
+    histo[iData] -> Draw("ep");
+  }
   hstack -> Draw("hist");
-  histo[iData] -> Draw("epsame");
+
+  if (DataMode == "dataon")
+    histo[iData] -> Draw("epsame");
   
   errors -> Draw("same,2");
 
       TH1F ratio("ratio","",haxis.GetNbinsX(),left,histo[0]->GetNbinsX() * histo[0]->GetBinWidth(0));
       ratio.SetStats(0);
       
-      cout<<histo[0]->GetBinWidth(0)<<","<<large<<endl;
+      //cout<<histo[0]->GetBinWidth(0)<<","<<large<<endl;
       /*
       cout<<errors -> GetNbinsX()<<","<<haxis.GetNbinsX()<<","<<ratio.GetNbinsX()<<","<<hstack->GetHistogram()->GetNbinsX()<<endl;
       cout<<errors -> GetBinWidth(0)<<","<<haxis.GetBinWidth(0)<<","<<ratio.GetBinWidth(0)<<","<<hstack->GetHistogram()->GetBinWidth(0)<<endl;
@@ -297,8 +328,8 @@ void drawPlots(TString variable,
     }
     c2->Update();
     c2->cd();
-    ratio.GetXaxis()->SetRangeUser(0.,haxis.GetNbinsX() * haxis.GetBinWidth(0));
-    //ratio.GetXaxis()->SetLimits(0.,haxis.GetNbinsX() * haxis.GetBinWidth(0));
+    //ratio.GetXaxis()->SetRangeUser(0.,haxis.GetNbinsX() * haxis.GetBinWidth(0));
+    ratio.GetXaxis()->SetRangeUser(left,right);
     ratio.GetYaxis()->SetRangeUser(0.,2.);
     ratio.GetXaxis()->SetTitleSize(0.15);
     ratio.GetXaxis()->SetTitleOffset(1.2);
@@ -331,7 +362,7 @@ void drawPlots(TString variable,
 
   leg -> Draw();
   DrawTLatex(0.88, 0.860, 0.04, "CMS preliminary");
-  DrawTLatex(0.88, 0.830, 0.03, "L = 40.03pb^{-1}");
+  DrawTLatex(0.88, 0.830, 0.03, "L = 40.03 pb^{-1}");
   DrawTLatex(0.88, 0.780, 0.05, Channel);
   DrawTLatex(0.88, 0.740, 0.04, njets);
   
