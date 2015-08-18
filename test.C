@@ -93,6 +93,8 @@ void test::Initialise() {
   //Variables Added to Be Studied
   tree->Branch("pt1",&pt1,"pt1");
   tree->Branch("pt2",&pt2,"pt2");
+  tree->Branch("ptll",&ptll,"ptll");
+  tree->Branch("drll",&drll,"drll");
   tree->Branch("pfType1Met",&pfType1Met,"pfType1Met");
   tree->Branch("trkMet",&trkMet,"trkMet");
   tree->Branch("dphill",&dphill,"dphill");
@@ -106,6 +108,7 @@ void test::Initialise() {
   tree->Branch("dphilmet2",&dphilmet2,"dphilmet2");
   tree->Branch("bveto_ip",&bveto_ip,"bveto_ip");
   tree->Branch("nbjettche",&nbjettche,"nbjettche");
+  tree->Branch("Ht",&Ht,"Ht");
   tree->Branch("baseW",&baseW,"baseW");
 
   //------------------------------------------------------------------------------

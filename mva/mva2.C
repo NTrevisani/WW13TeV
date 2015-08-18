@@ -95,6 +95,7 @@ void test_train(TString signalName = "WW",
   
 }
 
+/*
 void allBranches(TTree* inTree){
   
   inTree->SetBranchAddress("fullpmet",&fullpmet);
@@ -129,8 +130,8 @@ void createOutput(TTree* outTree){
   outTree->Branch("baseW",&baseW);        
 
 }
-
-void read(TString sampleName = "Dark10")
+*/
+void read(TString sampleName = "WW")
 {
   //calling the reader of the MVA analysis
   TMVA::Reader* reader = new TMVA::Reader("");
@@ -150,89 +151,57 @@ void read(TString sampleName = "Dark10")
   //reader->BookMVA("Fisher", "weights/MVAnalysis_Fisher.weights.xml");
   reader->BookMVA("BDT", "weights/" + sampleName + "_BDT.weights.xml");
   
-  //calling Dark Matter File and Tree
-  TFile *MyDarkMatterFile = new TFile("../rootFiles/AllJet/OF/" + sampleName + ".root","READ");
-  TTree* DarkMatterTree = (TTree*)MyDarkMatterFile->Get("nt");
+  /*
+  //Calling WW Signal File and Tree and Creating Output Signal Trees 
+  TFile *MySigFile = new TFile("../rootFiles/AllJet/OF/WW.root","READ");
+  TTree* MySigTree = (TTree*)MySigFile->Get("nt");
 
-  DarkMatterTree->SetBranchAddress("fullpmet",&fullpmet);
-  DarkMatterTree->SetBranchAddress("trkpmet",&trkpmet);
-  DarkMatterTree->SetBranchAddress("ratioMet",&ratioMet);
-  DarkMatterTree->SetBranchAddress("ptll",&ptll);
-  DarkMatterTree->SetBranchAddress("mth",&mth);
-  DarkMatterTree->SetBranchAddress("jetpt1",&jetpt1);
-  DarkMatterTree->SetBranchAddress("ptWW",&ptWW);
-  DarkMatterTree->SetBranchAddress("dphilljet",&dphilljet);
-  DarkMatterTree->SetBranchAddress("dphillmet",&dphillmet);
-  DarkMatterTree->SetBranchAddress("dphijet1met",&dphijet1met);
-  DarkMatterTree->SetBranchAddress("nvtx",&nvtx);
+  MySigTree->SetBranchAddress("fullpmet",&fullpmet);
+  MySigTree->SetBranchAddress("trkpmet",&trkpmet);
+  MySigTree->SetBranchAddress("ratioMet",&ratioMet);
+  MySigTree->SetBranchAddress("ptll",&ptll);
+  MySigTree->SetBranchAddress("mth",&mth);
+  MySigTree->SetBranchAddress("jetpt1",&jetpt1);
+  MySigTree->SetBranchAddress("ptWW",&ptWW);
+  MySigTree->SetBranchAddress("dphilljet",&dphilljet);
+  MySigTree->SetBranchAddress("dphillmet",&dphillmet);
+  MySigTree->SetBranchAddress("dphijet1met",&dphijet1met);
+  MySigTree->SetBranchAddress("nvtx",&nvtx);
 
-  //calling ZH File and Tree
-  TFile *MyZHFile = new TFile("../rootFiles/AllJet/OF/ZH.root","READ");
-  TTree* ZHTree = (TTree*)MyZHFile->Get("nt");
+  TTree *outSigTree = new TTree ("Out","Out");
+  outSigTree -> SetDirectory(0);
+  createOutput(outSigTree);
+  */
+  const int nProcesses = 2;
 
-  ZHTree->SetBranchAddress("fullpmet",&fullpmet);
-  ZHTree->SetBranchAddress("trkpmet",&trkpmet);
-  ZHTree->SetBranchAddress("ratioMet",&ratioMet);
-  ZHTree->SetBranchAddress("ptll",&ptll);
-  ZHTree->SetBranchAddress("mth",&mth);
-  ZHTree->SetBranchAddress("jetpt1",&jetpt1);
-  ZHTree->SetBranchAddress("ptWW",&ptWW);
-  ZHTree->SetBranchAddress("dphilljet",&dphilljet);
-  ZHTree->SetBranchAddress("dphillmet",&dphillmet);
-  ZHTree->SetBranchAddress("dphijet1met",&dphijet1met);
-  ZHTree->SetBranchAddress("nvtx",&nvtx);
+  enum{iWW, iDY};
 
-  //calling HWW File and Tree
-  TFile *MyHWWFile = new TFile("../rootFiles/AllJet/OF/HWW.root","READ");
-  TTree* HWWTree = (TTree*)MyHWWFile->Get("nt");
+  TFile *MyFile[nProcesses];
+  TTree *MyTree[nProcesses];
+  TTree *outTree[nProcesses];
 
-  HWWTree->SetBranchAddress("fullpmet",&fullpmet);
-  HWWTree->SetBranchAddress("trkpmet",&trkpmet);
-  HWWTree->SetBranchAddress("ratioMet",&ratioMet);
-  HWWTree->SetBranchAddress("ptll",&ptll);
-  HWWTree->SetBranchAddress("mth",&mth);
-  HWWTree->SetBranchAddress("jetpt1",&jetpt1);
-  HWWTree->SetBranchAddress("ptWW",&ptWW);
-  HWWTree->SetBranchAddress("dphilljet",&dphilljet);
-  HWWTree->SetBranchAddress("dphillmet",&dphillmet);
-  HWWTree->SetBranchAddress("dphijet1met",&dphijet1met);
-  HWWTree->SetBranchAddress("nvtx",&nvtx);
+  TString MyName[nProcesses];
 
-  //calling WW File and Tree 
-  TFile *MyWWFile = new TFile("../rootFiles/AllJet/OF/WW.root","READ");
-  TTree* WWTree = (TTree*)MyWWFile->Get("nt");
+  MyName[iWW]    = "WW";
+  MyName[iDY]    = "DY";
 
-  WWTree->SetBranchAddress("fullpmet",&fullpmet);
-  WWTree->SetBranchAddress("trkpmet",&trkpmet);
-  WWTree->SetBranchAddress("ratioMet",&ratioMet);
-  WWTree->SetBranchAddress("ptll",&ptll);
-  WWTree->SetBranchAddress("mth",&mth);
-  WWTree->SetBranchAddress("jetpt1",&jetpt1);
-  WWTree->SetBranchAddress("ptWW",&ptWW);
-  WWTree->SetBranchAddress("dphilljet",&dphilljet);
-  WWTree->SetBranchAddress("dphillmet",&dphillmet);
-  WWTree->SetBranchAddress("dphijet1met",&dphijet1met);
-  WWTree->SetBranchAddress("nvtx",&nvtx);
-
-  //creating output Dark Matter Tree
-  TTree *outDarkMatterTree = new TTree ("Dark","Dark");
-  outDarkMatterTree -> SetDirectory(0);
-  createOutput(outDarkMatterTree);
-  
-  //creating output ZH Tree
-  TTree *outZHTree = new TTree ("ZH","ZH");
-  outZHTree -> SetDirectory(0);
-  createOutput(outZHTree);
-  
-  //creating output HWW Tree
-  TTree *outHWWTree = new TTree ("HWW","HWW");
-  outHWWTree -> SetDirectory(0);
-  createOutput(outHWWTree);
-  
-  //creating output WW Tree
-  TTree *outWWTree = new TTree ("WW","WW");
-  outWWTree -> SetDirectory(0);
-  createOutput(outWWTree);
+  Float_t pt1;
+  Float_t pt2;
+  Float_t ptll;
+  Float_t mll;
+  Float_t mth;
+  Float_t pfType1Met;
+  Float_t drll;
+  Float_t dphill;
+  Float_t dphilljet;
+  Float_t dphillmet;
+  Float_t trkMet;
+  Float_t Mt1;
+  Float_t Mt2;
+  Float_t mpmet;
+  Float_t Mc;
+  Float_t ptWW;
+  Float_t Ht;
 
   Float_t cutpt1        = 20;
   Float_t cutpt2        = 20;
@@ -251,42 +220,115 @@ void read(TString sampleName = "Dark10")
   Float_t cutMc         = 0;
   Float_t cutptWW       = 0;
   Float_t cutHt         = 0;
-  Float_t cutValue      = 0.15;
+  Float_t cutValue      = 0.022;
 
   Float_t value         = 0;
 
-  //applying selections on Dark Matter sample
-  Int_t contSig = 0;
-  for (int i = 0; i < DarkMatterTree->GetEntries(); ++i){
-    if (i == 0) cout<<"Dark Matter Entries : "<<DarkMatterTree->GetEntries()<<endl;
-    DarkMatterTree->GetEntry(i);
+  //Loop Over All Processes
+  for (int i = 0; i < nProcesses; ++i){
+    MyFile[i] = new TFile("../rootFiles/SF/MediumIDTighterIP/" + MyName[i] + ".root","READ");
+    MyTree[i] = (TTree*)MyFile[i]->Get("nt");
+    
+    //Calling Processes Trees 
+    MyTree[i]->SetBranchAddress("fullpmet",&fullpmet);
+    MyTree[i]->SetBranchAddress("trkpmet",&trkpmet);
+    MyTree[i]->SetBranchAddress("ratioMet",&ratioMet);
+    MyTree[i]->SetBranchAddress("ptll",&ptll);
+    MyTree[i]->SetBranchAddress("mth",&mth);
+    MyTree[i]->SetBranchAddress("jetpt1",&jetpt1);
+    MyTree[i]->SetBranchAddress("ptWW",&ptWW);
+    MyTree[i]->SetBranchAddress("dphilljet",&dphilljet);
+    MyTree[i]->SetBranchAddress("dphillmet",&dphillmet);
+    MyTree[i]->SetBranchAddress("dphijet1met",&dphijet1met);
+    MyTree[i]->SetBranchAddress("nvtx",&nvtx);
 
-    if (pt1        < cutpt1)        continue;
-    if (pt2        < cutpt2)        continue;
-    if (ptll       < cutptll)       continue;
-    if (mll        < cutmll)        continue;
-    if (mth        < cutmth)        continue;
-    if (pfType1Met < cutpfType1Met) continue;
-    if (drll       < cutdrll)       continue;
-    if (dphill     < cutdphill)     continue;
-    if (dphilljet  < cutdphilljet)  continue;
-    if (dphillmet  < cutdphillmet)  continue;
-    if (trkMet     < cuttrkMet)     continue;
-    if (Mt1        < cutMt1)        continue;
-    if (Mt2        < cutMt2)        continue;
-    if (mpmet      < cutmpmet)      continue;
-    if (Mc         < cutMc)         continue;
-    if (ptWW       < cutptWW)       continue;
-    if (Ht         < cutHt)         continue;
+    MyTree[i]->SetBranchAddress("pt1",&pt1);        
+    MyTree[i]->SetBranchAddress("pt2",&pt2);        
+    MyTree[i]->SetBranchAddress("ptll",&ptll);       
+    MyTree[i]->SetBranchAddress("mll",&mll);        
+    MyTree[i]->SetBranchAddress("mth",&mth);        
+    MyTree[i]->SetBranchAddress("pfType1Met",&pfType1Met); 
+    MyTree[i]->SetBranchAddress("drll",&drll);       
+    MyTree[i]->SetBranchAddress("dphill",&dphill);     
+    MyTree[i]->SetBranchAddress("dphilljet",&dphilljet);  
+    MyTree[i]->SetBranchAddress("dphillmet",&dphillmet);  
+    MyTree[i]->SetBranchAddress("trkMet",&trkMet);     
+    //MyTree[i]->SetBranchAddress("Mt1",&Mt1);        
+    //MyTree[i]->SetBranchAddress("Mt2",&Mt2);        
+    MyTree[i]->SetBranchAddress("mpmet",&mpmet);      
+    //MyTree[i]->SetBranchAddress("Mc",&Mc);         
+    MyTree[i]->SetBranchAddress("ptWW",&ptWW);       
+    MyTree[i]->SetBranchAddress("Ht",&Ht);         
 
-    value = reader->EvaluateMVA("BDT");
-    if(value       < cutValue)      continue;
+    //Creating Output Trees
+    outTree[i] = new TTree (MyName[i],MyName[i]);
+    outTree[i] -> SetDirectory(0);
 
-    ++contSig;
-    outDarkMatterTree->Fill();
+    outTree[i] -> Branch("fullpmet",&fullpmet);
+    outTree[i] -> Branch("trkpmet",&trkpmet);
+    outTree[i] -> Branch("ratioMet",&ratioMet);
+    outTree[i] -> Branch("ptll",&ptll);
+    outTree[i] -> Branch("mth",&mth);
+    outTree[i] -> Branch("jetpt1",&jetpt1);
+    outTree[i] -> Branch("ptWW",&ptWW);
+    outTree[i] -> Branch("dphilljet",&dphilljet);
+    outTree[i] -> Branch("dphillmet",&dphillmet);
+    outTree[i] -> Branch("dphijet1met",&dphijet1met);
+    outTree[i] -> Branch("nvtx",&nvtx);  
+    outTree[i] -> Branch("baseW",&baseW);        
+  
+    outTree[i] -> Branch("pt1",&pt1);        
+    outTree[i] -> Branch("pt2",&pt2);        
+    outTree[i] -> Branch("ptll",&ptll);       
+    outTree[i] -> Branch("mll",&mll);        
+    outTree[i] -> Branch("mth",&mth);        
+    outTree[i] -> Branch("pfType1Met",&pfType1Met); 
+    outTree[i] -> Branch("drll",&drll);       
+    outTree[i] -> Branch("dphill",&dphill);     
+    outTree[i] -> Branch("dphilljet",&dphilljet);  
+    outTree[i] -> Branch("dphillmet",&dphillmet);  
+    outTree[i] -> Branch("trkMet",&trkMet);     
+    //outTree[i] -> Branch("Mt1",&Mt1);        
+    //outTree[i] -> Branch("Mt2",&Mt2);        
+    outTree[i] -> Branch("mpmet",&mpmet);      
+    //outTree[i] -> Branch("Mc",&Mc);         
+    outTree[i] -> Branch("ptWW",&ptWW);       
+    outTree[i] -> Branch("Ht",&Ht);         
+
+    //Applying Selections
+    Int_t cont = 0;
+    for (int j = 0; j < MyTree[i]->GetEntries(); ++j){
+      if (j == 0) cout<<MyName[i]<<": "<<MyTree[i]->GetEntries()<<endl;
+      MyTree[i]->GetEntry(j);
+      
+      if (pt1        < cutpt1)        continue;
+      if (pt2        < cutpt2)        continue;
+      if (ptll       < cutptll)       continue;
+      if (mll        < cutmll)        continue;
+      if (mth        < cutmth)        continue;
+      if (pfType1Met < cutpfType1Met) continue;
+      if (drll       < cutdrll)       continue;
+      if (dphill     < cutdphill)     continue;
+      if (dphilljet  < cutdphilljet)  continue;
+      if (dphillmet  < cutdphillmet)  continue;
+      if (trkMet     < cuttrkMet)     continue;
+      //      if (Mt1        < cutMt1)        continue;
+      //if (Mt2        < cutMt2)        continue;
+      if (mpmet      < cutmpmet)      continue;
+      //if (Mc         < cutMc)         continue;
+      if (ptWW       < cutptWW)       continue;
+      if (Ht         < cutHt)         continue;
+      
+      value = reader->EvaluateMVA("BDT");
+      if(value       < cutValue)      continue;
+      
+      ++cont;
+      outTree[i]->Fill();
+    }
+    cout<<MyName[i]<<" survived: "<<cont<<" ("<<100 * cont / MyTree[i]->GetEntries()<<"%)"<<endl;  
   }
-  cout<<"Signal survived: "<<contSig<<endl;  
 
+  /*
   //applying selections on ZH sample
   Int_t contZH = 0;
   for (int i = 0; i < ZHTree->GetEntries(); ++i){
@@ -385,14 +427,12 @@ void read(TString sampleName = "Dark10")
   }
   
   cout<<"WW survived: "<<contWW<<endl;
-
+*/
   //saving trees
   TFile *outMVA = new TFile("outMVA" + sampleName + ".root","RECREATE");
   outMVA -> cd();
-  outDarkMatterTree -> Write();
-  outZHTree -> Write();
-  outHWWTree -> Write();
-  outWWTree -> Write();
+  for (int y = 0; y < nProcesses; ++y)
+    outTree[y] -> Write();
   outMVA -> Close();
 }
 
@@ -619,8 +659,8 @@ for (int i = 0 ; i < 10 ; ++i){
 
 
 void mva2(){
-  test_train();
-  //read();
+  //test_train();
+  read();
   //draw();
 }
 
