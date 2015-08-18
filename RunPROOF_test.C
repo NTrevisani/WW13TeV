@@ -132,6 +132,9 @@ void RunPROOF_test(double luminosity,
   
   if (Signal=="test") {
     
+    //50ns
+    //**********************************************************************************************************************
+
     if (theSample == "Data2015"){
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/Data/latino_DoubleEG.root");
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/Data/latino_MuonEG.root");
@@ -172,6 +175,50 @@ void RunPROOF_test(double luminosity,
     else if (theSample == "DY50"){
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/50ns/latino_DYJetsToLL.root");
     }
+
+    //25ns
+    //**********************************************************************************************************************
+
+    else if (theSample == "WW"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_WWTo2L2Nu.root");
+    }
+
+    else if (theSample == "WJets"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_WJetsToLNu.root");
+    }
+
+    else if (theSample == "VV"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_WZTo3LNu.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ZZ4l.root");
+    }
+
+    else if (theSample == "TTJets"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_TTJets.root");
+    }
+ 
+    else if (theSample == "SingleTop"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ST_t-channel_antitop.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ST_t-channel_top.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ST_tW_antitop.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ST_tW_top.root");
+    }
+
+    else if (theSample == "Top"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ST_t-channel_antitop.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ST_t-channel_top.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ST_tW_antitop.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ST_tW_top.root");
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_TTJets.root");
+    }
+
+    else if (theSample == "DY"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_DYJetsToLL_M-10to50.root");
+    }
+    else if (theSample == "HWW"){
+      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/25ns/latino_ggHWW120.root");
+    }
+
+    //**********************************************************************************************************************
 
     else if (theSample == "VBF"){
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/newLatino/latino_VBF125.root");

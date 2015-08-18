@@ -103,6 +103,7 @@ class test: public PAFAnalysis{
    TH1F* hMinvWWLevel[4];
    TH1F* hMtWWLevel[4];
    TH1F* hpfMetWWLevel[4];
+   TH1F* htrkMetWWLevel[4];
    TH1F* hpminMetWWLevel[4];
    TH1F* hDeltaRLeptonsWWLevel[4];
    TH1F* hDeltaPhiLeptonsWWLevel[4];
@@ -122,6 +123,7 @@ class test: public PAFAnalysis{
    TH1F* hMinvTwoLeptonsLevel;
    TH1F* hMtTwoLeptonsLevel;
    TH1F* hpfMetTwoLeptonsLevel;
+   TH1F* htrkMetTwoLeptonsLevel;
    TH1F* hpminMetTwoLeptonsLevel;
    TH1F* hDeltaRLeptonsTwoLeptonsLevel;
    TH1F* hDeltaPhiLeptonsTwoLeptonsLevel;
@@ -136,7 +138,18 @@ class test: public PAFAnalysis{
    TH1F *hLooseIso;
 
  public:
- 
+   
+   //Additional Variables
+   
+   Float_t fullpmet;
+   Float_t trkpmet;
+   Float_t mpmet;
+   Float_t Ht;
+   Float_t dphijet1met;
+   Float_t ratioMet;
+   Float_t ptWW;
+   Float_t metvar;
+
    // My Declarations:OA
    // Define global variables
 

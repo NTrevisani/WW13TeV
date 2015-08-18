@@ -17,11 +17,11 @@
 #include "TGraphErrors.h"
 #include "TLatex.h"
 
-const int nProcesses = 7;
+const int nProcesses = 6;
 
 int iData;
 
-enum {iWW, iWZ, iZZ, iTTJets, iDY, iWJets, iData};
+enum {iWW, iWJets, iVV, iTop, iDY, iData};
 //enum {iWW, iTTbar, iWJets};
 
 TFile *input[nProcesses];
@@ -31,28 +31,27 @@ TH1F  *histo[nProcesses];
 
 TString process[nProcesses];
 
-process[iWW]     = "WW50";
-process[iWZ]     = "WZ50";
-process[iZZ]     = "ZZ50";
-process[iTTJets] = "TTJets50";
-process[iDY]     = "DY50";
-process[iWJets]  = "WJets50";
+process[iWW]     = "WW";
+process[iWJets]  = "WJets";
+process[iVV]     = "VV";
+process[iTop]    = "Top";
+process[iDY]     = "DY";
 process[iData]   = "Data2015";
-//process[iTTbar]  = "TTbar50";
 
 Color_t color[nProcesses];
 
 color[iWW]     = kAzure - 9;
-color[iWZ]     = kAzure - 2;
-color[iZZ]     = kAzure - 2;
 color[iWJets]  = kGray + 1;
-color[iTTJets] = kYellow;
+color[iVV]     = kAzure - 2;
+color[iTop]    = kYellow;
 color[iDY]     = kGreen + 2;
-//color[iTTbar]   = kYellow;
 color[iData]   = kBlack;
+//color[iTTbar]   = kYellow;
 
 TGraphErrors *errors  = new TGraphErrors();
 TGraphErrors *erRatio = new TGraphErrors();
+
+//TH1::SetDefaultSumw2();
 
 //drawing instructions
 void drawPlots(TString variable,
@@ -94,16 +93,29 @@ void drawPlots(TString variable,
       rangeY = histo[ip] -> GetMaximum();
   }
 
+  //binEntry = binContent / weight
+  //weigth = Integral / totalEntries
+  //binEntry = binContent / ( Integral / totalEntries ) = binContent * totalEntries / Integral
+  //err = sqrt (binContent * totalEntries / Integral)
+  //voglio l'errore relativo -> divido per totalEntries
+  //erroRel = sqrt (binContent/ (Integral * totalEntries))
+  //moltoplico per il valore dell'osservabile
+  //errHisto = 
+  
   //statistical errors
   for (int i = 0; i < nProcesses - 1; ++i){
-    float errorWeight = histo[i] -> Integral() / histo[i] -> GetEntries(); 
+    float errorWeight = 1.;
+    if(histo[i] -> Integral() != 0)
+      errorWeight = histo[i] -> GetEntries() / histo[i] -> Integral();
     for (int j = 0; j < histo[i] -> GetNbinsX(); ++j)
-      histo[i] -> SetBinError(j, sqrt(histo[i] -> GetBinContent(j) * errorWeight));
+      histo[i] -> SetBinError(j, (histo[i] -> GetBinError(j) / errorWeight));
   }
   if (DataMode == "nodata"){
-    float errorWeight = histo[nProcesses - 1] -> GetEntries() / histo[nProcesses - 1] -> Integral();
+    float errorWeight = 1.; 
+    if(histo[nProcesses - 1] -> Integral() != 0)
+      errorWeight = histo[nProcesses - 1] -> GetEntries() / histo[nProcesses - 1] -> Integral();
     for (int j = 0; j < histo[nProcesses - 1] -> GetNbinsX(); ++j)
-      histo[nProcesses - 1] -> SetBinError(j, sqrt(histo[nProcesses - 1] -> GetBinContent(j) * errorWeight));
+      histo[nProcesses - 1] -> SetBinError(j, (histo[nProcesses - 1] -> GetBinError(j) / errorWeight));
   }
   
   //Main Canvas
@@ -215,13 +227,13 @@ void drawPlots(TString variable,
     if (haxis.GetBinContent(e) != 0) 
       erRatio->SetPointError(e, large, haxis.GetBinError(e) / haxis.GetBinContent(e));//haxis.GetBinError(e) / haxis.GetBinContent(e));
     else erRatio->SetPointError(e, large, 0.);
-    if(variable == "hDeltaPhiLeptonsWWLevel0"){
-      cout<<haxis.GetBinContent(e)<<"   "<<histo[0]->GetBinContent(e) + histo[1]->GetBinContent(e) + histo[2]->GetBinContent(e)<<endl;
-      cout<<histo[0]->GetBinContent(e)<<"   "<<histo[1]->GetBinContent(e)<<"   "<<histo[2]->GetBinContent(e)<<endl;
-      cout<<haxis.GetBinCenter(e)<<"   "<<histo[0]->GetBinCenter(e)<<endl;
-      cout<<""<<endl;
-    }
-    }
+    //    if(variable == "hDeltaPhiLeptonsWWLevel0"){
+    //cout<<haxis.GetBinContent(e)<<"   "<<histo[0]->GetBinContent(e) + histo[1]->GetBinContent(e) + histo[2]->GetBinContent(e)<<endl;
+    //cout<<histo[0]->GetBinContent(e)<<"   "<<histo[1]->GetBinContent(e)<<"   "<<histo[2]->GetBinContent(e)<<endl;
+    //cout<<haxis.GetBinCenter(e)<<"   "<<histo[0]->GetBinCenter(e)<<endl;
+    //cout<<""<<endl;
+    //  }
+  }
   float maxYaxisStack = 0.;
   Int_t maxBin = haxis.GetMaximumBin();
   maxYaxisStack = haxis.GetBinContent(maxBin) + errors -> GetErrorY(maxBin) / 2;
@@ -424,7 +436,7 @@ void macroHisto(TString printMode = "",
     cout<<"stackMode = 'stackon' or 'stackoff'"<<endl;
     cout<<"MuonID = 'MediumID' or 'MediumIDTighterIP' or 'TightID' or 'TightIDTighterIP'"<<endl;
     cout<<"I suggest, for example:"<<endl;
-    cout<<"root -l -b -q 'macroHisto.C(\"pdf\",\"logoff\",\"normoff\",\"OF\",\"stackon\",\"TightIDTighterIP\")'"<<endl;
+    cout<<"root -l -b -q 'macroHisto.C(\"pdf\",\"logoff\",\"normoff\",\"OF\",\"stackon\",\"MediumIDTighterIP\")'"<<endl;
     cout<<"****************************************************************************************************"<<endl;
     return;
   }

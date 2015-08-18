@@ -13,8 +13,9 @@ TEST="test"
 
 NJETS=$1
 
-CHANNELS="OF"
-#"MuMu OF EE All SF OF EE MuE EMu MuMu"
+CHANNELS="SF"
+#"All SF OF EE MuE EMu MuMu"
+
 
 PROOFMODE="kCluster"
 
@@ -24,15 +25,18 @@ MUONIDS="MediumIDTighterIP"
 SAMESIGN="OS" 
 
 SAMPLES="
-Data2015             \
-WW50                 \
-WJets50              \
-WZ50                 \
-ZZ50                 \
-TTJets50             \
-DY50                 \
-VV50                 \
+Data2015           \
+WW                 \
+WJets              \
+VV                 \
+Top                \
+DY                 \
 "
+#TTJets             \
+#HWW                \
+#"
+#WZ50                 \
+#ZZ50                 \
 #TTbar50              \
 #WW50                 \
 #WJets50              \
