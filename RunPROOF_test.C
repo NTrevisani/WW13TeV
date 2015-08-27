@@ -140,7 +140,7 @@ void RunPROOF_test(double luminosity,
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/Data/latino_MuonEG.root");
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/Data/latino_SingleElectron.root");
       gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/Data/latino_SingleMuon.root");
-      gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/Data/latino_SingleMu.root");
+      //gPAFOptions->dataFiles.push_back("/gpfs/csic_projects/cms/trevisanin/latinoNoElement/Data/latino_SingleMu.root");
     }
 
     else if (theSample == "WW50"){

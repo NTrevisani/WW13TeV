@@ -57,7 +57,8 @@ class test: public PAFAnalysis{
   TH1F* h_n_PV; 
 
 
-   // Counting histograms                                                                  //----------------------------------------------------------------------------       
+  // Counting histograms
+  //----------------------------------------------------------------------------       
 
    TH1F* hWTrigger;
    TH1F* hWMetCut;
@@ -114,6 +115,16 @@ class test: public PAFAnalysis{
    TH1F* hHt[4];
    TH1F* hHtAfter[4];
 
+   //B-Veto Level Histograms
+   //----------------------------------------------------------------------------    
+
+   TH1F* hbVetoOld[4];
+   TH1F* hbVetoMu[4];
+   TH1F* hbVetoCsvv2ivfLoose[4];
+   TH1F* hbVetoCsvv2ivfMedium[4];
+   TH1F* hbVetoCsvv2ivfTight[4];
+   TH1F* hbVetoCsvv2ivfLooseAndMu[4];
+
    // TwoLeptons level histograms                                            
    //---------------------------------------------------------------------------- 
    
@@ -136,6 +147,8 @@ class test: public PAFAnalysis{
    TH1F* hDzTwoLeptonsLevel;  
    
    TH1F *hLooseIso;
+   TH1F *hsoftMuPt;
+   TH1F *hjetPt;
 
  public:
    
@@ -149,6 +162,7 @@ class test: public PAFAnalysis{
    Float_t ratioMet;
    Float_t ptWW;
    Float_t metvar;
+   Float_t njetGen;
 
    // My Declarations:OA
    // Define global variables
